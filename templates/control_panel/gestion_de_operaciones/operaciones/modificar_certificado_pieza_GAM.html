@@ -1,0 +1,157 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Editar Certificado de pieza </h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">Gestión del Sitio</li>
+        <li class="breadcrumb-item">Servicios</li>
+        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Certificaciones GAM</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Editar Certificado de pieza</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"></h6>
+
+            </div>
+            <div class="card-body">
+                <!-- Horizontal Form -->
+                <form>
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">ID del certificado</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="HAB56425116513" name="id_certificado_user">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputEmail3" class="col-sm-3 col-form-label">Seleccionar pieza</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="exampleFormControlSelect1">
+                                <option>Joya 1</option>
+                                <option>Gema 2</option>
+                                <option>Joya 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label for="exampleFormControlInput1"><strong>Reporte de Calificación</strong></label>
+                    <hr>
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Número de Reporte</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="152458752222" name="numero_reporte">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Forma estilo de corte</label></div>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="Esmeralda" name="forma_y_estilo_de_corte">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Dimensiones</label></div>
+                        <div class="col-sm-9 row">
+                            <div class="col-3">
+                                <input type="number" class="form-control" id="exampleFormControlInput1"
+                                       placeholder="10" name="dimensiones"></div>
+                            <div class="col-3"><input type="number" class="form-control" id="exampleFormControlInput1"
+                                                      placeholder="10" name="dimensiones">
+                            </div>
+                            <div class="col-3"><input type="number" class="form-control" id="exampleFormControlInput1"
+                                                      placeholder="12" name="dimensiones">
+                            </div>
+                        </div>
+                    </div>
+                    <label for="exampleFormControlInput1"><strong>Resultados de Calificación</strong></label>
+                    <hr>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Peso de la pieza</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="15" name="peso_pieza">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Grado del color</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="45" name="grado_color">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Grado de claridad</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="45" name="grado_claridad">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Grado de corte</label></div>
+                        <div class="col-sm-9 row">
+                            <div class="col-3">
+                                <input type="number" class="form-control" id="exampleFormControlInput1"
+                                       placeholder="10" name="dimensiones"></div>
+                            <div class="col-3"><input type="number" class="form-control" id="exampleFormControlInput1"
+                                                      placeholder="10" name="dimensiones">
+                            </div>
+                            <div class="col-3"><input type="number" class="form-control" id="exampleFormControlInput1"
+                                                      placeholder="12" name="dimensiones">
+                            </div>
+                        </div>
+                    </div>
+                    <label for="exampleFormControlInput1"><strong>Información adicional</strong></label>
+                    <hr>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Pulido</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="Pulido" name="pulido">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Simetría</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="Simetria" name="simetria">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"><label for="exampleFormControlInput1">Fluorecencia</label></div>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="Fluorecencia" name="fluorecencia">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary">Certificar Pieza</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+{% endblock %}

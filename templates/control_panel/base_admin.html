@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="{% static 'control_panel/img/logo/Grupo 6.png' %}" rel="icon">
+    <title>GAM| Administración</title>
+
+    <link href="{% static 'control_panel/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'control_panel/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'control_panel/css/ruang-admin.min.css' %}" rel="stylesheet">
+    <link href="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'index' %}">
+            <div class="sidebar-brand-icon">
+                <img style="width: 55%"
+                     src="{% static 'control_panel/img/logo/Grupo 29.png' %}" alt="logo">
+            </div>
+            {#            <div class="sidebar-brand-text mx-5">GAM</div>#}
+        </a>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'panel' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Inicio | Administración</span></a>
+        </li>
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">
+            Gestión del Sitio
+        </div>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-toggle="collapse" data-target="#collapseBootstrap"
+               aria-expanded="true" aria-controls="collapseBootstrap">
+                <i class="far fa-fw fa-clipboard"></i>
+                <span>Piezas</span>
+            </a>
+            <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Piezas</h6>
+                    <a class="collapse-item" href="{% url 'categorias_piezas' %}">Categorías</a>
+                    <a class="collapse-item" href="{% url 'piezas' %}">Piezas</a>
+
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage"
+               aria-expanded="true"
+               aria-controls="collapsePage">
+                <i class="fas fa-fw fa-atlas"></i>
+                <span>Servicios</span>
+            </a>
+            <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Certificación por GAM</h6>
+                    <a class="collapse-item" href="{% url 'certificados_por_GAM' %}">Certificados por GAM</a>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage1"
+               aria-expanded="true"
+               aria-controls="collapsePage1">
+                <i class="fas fa-fw fa-newspaper"></i>
+                <span>Blog</span>
+            </a>
+            <div id="collapsePage1" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Publicaciones</h6>
+                    <a class="collapse-item" href="{% url 'categorias_publicaciones' %}">Categorías</a>
+                    <a class="collapse-item" href="{% url 'publicaciones' %}">Publicaciones</a>
+
+                </div>
+            </div>
+        </li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Gestión de Usuarios
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'usuarios' %}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Usuarios</span>
+                </a>
+            </li>
+        {% endif %}
+
+        <hr class="sidebar-divider">
+        <div class="version" id="">Versión 1.0</div>
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <!-- TopBar -->
+            <nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
+                <button id="sidebarToggleTop" class="btn btn-link rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <div class="topbar-divider d-none d-sm-block"></div>
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            {#                            {% if request.user.is_superuser %}#}
+                            <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"
+                                 style="max-width: 60px">
+                            <span class="ml-2 d-none d-lg-inline text-white small">
+                                {{ request.user.username }}
+                                </span>
+                            {#                            {% elif request.user.is_moderador %}#}
+                            {#                                <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
+                            {#                                     style="max-width: 60px">#}
+                            {#                                <span class="ml-2 d-none d-lg-inline text-white small">#}
+                            {#                                Moderador#}
+                            {#                                </span>#}
+                            {#                            {% else %}#}
+                            {#                                <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
+                            {#                                     style="max-width: 60px">#}
+                            {#                                <span class="ml-2 d-none d-lg-inline text-white small">#}
+                            {#                                Administardor#}
+                            {#                                </span>#}
+                            {#                            {% endif %}#}
+
+
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                             aria-labelledby="userDropdown">
+                            {#                            <a class="dropdown-item" href="#">#}
+                            {#                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>#}
+                            {#                                Perfil#}
+                            {#                            </a>#}
+                            {#                            <a class="dropdown-item" href="#">#}
+                            {#                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>#}
+                            {#                                Cambiar contraseña#}
+                            {#                            </a>#}
+
+                            {#                            <div class="dropdown-divider"></div>#}
+                            <a class="dropdown-item" href="{% url 'salir' %}">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Salir
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Topbar -->
+
+            <!-- Container Fluid-->
+            <div class="container-fluid" id="container-wrapper">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    {% block submenu-superior %}
+
+                    {% endblock %}
+
+                </div>
+
+                <div class="row mb-3">
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+                <!--Row-->
+
+                {#                <div class="row">#}
+                {#                    <div class="col-lg-12 text-center">#}
+                {#                        <p>Do you like this template ? you can download from <a#}
+                {#                                href="https://github.com/indrijunanda/RuangAdmin"#}
+                {#                                class="btn btn-primary btn-sm" target="_blank"><i class="fab fa-fw fa-github"></i>&nbsp;GitHub</a>#}
+                {#                        </p>#}
+                {#                    </div>#}
+                {#                </div>#}
+
+            </div>
+            <!---Container Fluid-->
+        </div>
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+            <span>copyright &copy; <script> document.write(new Date().getFullYear()); </script> - Desarrollado por
+              <b><a href="" target="_blank">INOVA</a></b>
+            </span>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer -->
+    </div>
+</div>
+
+<!-- Scroll to top -->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script src="{% static 'control_panel/vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'control_panel/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'control_panel/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'control_panel/js/ruang-admin.min.js' %}"></script>
+{% block js %}
+
+{% endblock %}
+</body>
+
+</html>

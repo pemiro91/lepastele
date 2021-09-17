@@ -1,0 +1,136 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Piezas</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Piezas</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Tableros de Control</h6>
+                <a href="{% url 'insertar_pieza' %}" type="button" class="btn btn-primary mb-1"><i
+                        class="fas fa-plus"></i> Agregar</a>
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nro.</th>
+                        <th style="width: 60px">Imagen Principal</th>
+                        <th>Nro. referencia</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Imagen Principal</th>
+                        <th>Nro. referencia</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+
+                        <th>Acciones</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for pieza in piezas %}
+                        <tr>
+
+                            <td>{{ pieza.id }}</td>
+                            <td>
+                                {% if pieza.imagen_principal %}
+                                    <img src="{{ pieza.imagen_principal.url }}"
+                                         style="max-width: 60px;max-height: 60px"/>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ pieza.numero_referencia }}</td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" data-toggle="popover" title="Descripción"
+                                        data-content="{{ pieza.descripcion }}">{{ pieza.nombre_producto }}
+                                </button>
+                            </td>
+                            <td>{{ pieza.categoria_producto }}</td>
+                            <td>{{ pieza.precio }}</td>
+
+                            <td>
+                                <a href="{% url 'imagenes_secundarias_pieza' pieza.id %}"
+                                   title="Mostrar imágenes secundarias" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'editar_pieza' pieza.id %}" title="Editar Pieza"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" data-href="{% url 'eliminar_pieza' pieza.id %}" data-toggle="modal"
+                                   class="btn btn-primary btn-sm" data-id="{{ pieza.id }}"
+                                   title="Eliminar pieza"
+                                   data-target="#confirm-delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                {#                                <a href="{% url 'certificar_GAM' %}" class="btn btn-primary btn-sm"#}
+                                {#                                   title="Cartificar por GAM">#}
+                                {#                                    <i class="fas fa-cog"></i>#}
+                                {#                                </a>#}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar esta pieza?</h5>
+                    {#            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+                    {#              <span aria-hidden="true">&times;</span>#}
+                    {#            </button>#}
+                </div>
+                {#          <div class="modal-body">#}
+                {##}
+                {#          </div>#}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-primary btn-ok">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
+{% endblock %}

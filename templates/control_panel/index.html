@@ -1,0 +1,79 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Tablero de Control</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Inicio | Administración</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Tablero de Control</li>
+    </ol>
+{% endblock %}
+{% block content %}
+    <!-- Invoice Example -->
+    <div class="col-xl-12 col-lg-12  mb-4">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h6><i class="fas fa-check"></i><b>Error!
+                        </b></h6>
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible"
+                         role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h6><i class="fas fa-check"></i><b>
+                            {% if message.tags == 'success' %}
+                                Satisfactorio!
+                            {% elif message.tags == 'warning' %}
+                                Advertencia!
+                            {% endif %}
+                        </b></h6>
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        {% endif %}
+        <div class="card">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Últimas 5 Certificaciones realizadas por GAM </h6>
+                <a class="m-0 float-right btn btn-danger btn-sm" href="{% url 'certificados_por_GAM' %}">Mostrar más <i
+                        class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>ID Certificado</th>
+                        <th>Pieza</th>
+                        <th>Nro. de reporte GAM</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for operacion in operaciones_del_dia %}
+                        <tr>
+                            <td>{{ operacion.id }}</td>
+                            <td>
+                                <a href="{% url 'piezas' %}">{{ operacion.pieza.nombre_producto }}</a>
+                            </td>
+                            <td>{{ operacion.numero_reporte }}</td>
+                            <td><a href="{% url 'certificado_pieza' operacion.id %}"
+                                   class="btn btn-sm btn-primary">Detalles</a></td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer"></div>
+        </div>
+    </div>
+
+{% endblock %}
