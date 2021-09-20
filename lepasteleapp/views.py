@@ -6,7 +6,7 @@ from django.contrib.auth import logout as do_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 
-from lepasteleapp.models import *
+from lepasteleapp.models import User,Producto,Pedido,Operacion
 from django.db import transaction
 # from .forms import *
 from django.contrib.auth.decorators import login_required
@@ -46,187 +46,187 @@ def panel_home(request):
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
 
-
-# -----------------CRDU Categorias de Piezas---------------------------#
-def categorias_piezas(request):
-    if request.user.is_authenticated:
-        categorias_piezas = Categoria_Producto.objects.all()
-        context = {'categorias_productos': categorias_piezas}
-        return render(request,
-                      "control_panel/gestion_de_operaciones/productos/categorias_productos/categorias_piezas.html",
-                      context)
-    return redirect('login_user')
-
-
-def agregar_categoria_pieza(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            nombre_categoria = request.POST.get('nombre_categoria')
-            descripcion_categoria = request.POST.get('descripcion_categoria')
-            tipo_pieza = request.POST.get('tipo_pieza')
-
-            c = Categoria_Producto.objects.create(
-                nombre_categoria=nombre_categoria,
-                descripcion=descripcion_categoria,
-                tipo_pieza=tipo_pieza
-            )
-            c.save()
-            messages.success(request, 'La categoría de pieza fue registrada satisfactoriamente')
-            return redirect('categorias_piezas')
-
-        context = {}
-        return render(request,
-                      "control_panel/gestion_de_operaciones/productos/categorias_productos/insertar_categ_pieza.html",
-                      context)
-    return redirect('login_user')
-
-
-def modificar_categoria_pieza(request, id_cp=None):
-    if request.user.is_authenticated:
-        categoria_pieza_custom = Categoria_Producto.objects.get(id=id_cp)
-        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-        # cant_notificaciones = len(notificaciones)
-        if request.method == 'POST':
-            nombre_categoria = request.POST.get('nombre_categoria')
-            descripcion_categoria = request.POST.get('descripcion_categoria')
-            tipo_pieza = request.POST.get('tipo_pieza')
-
-            Categoria_Producto.objects.filter(id=id_cp).update(
-                nombre_categoria=nombre_categoria,
-                descripcion=descripcion_categoria,
-                tipo_pieza=tipo_pieza
-            )
-            messages.success(request, 'La categoría de pieza fue editada satisfactoriamente')
-            return redirect('categorias_piezas')
-        context = {'categoria_pieza': categoria_pieza_custom}
-        return render(request,
-                      'control_panel/gestion_de_operaciones/productos/categorias_productos/modificar_categoria_piezas.html',
-                      context)
-    return redirect('login_user')
-
-
-def eliminar_categoria_pieza(request, id_cp):
-    if request.user.is_authenticated:
-        cp = Categoria_Producto.objects.get(id=id_cp)
-        cp.delete()
-        return redirect('categorias_piezas')
-    return redirect('login_user')
-
-
-# -----------------CRDU Piezas----------------------------------------#
-def piezas(request):
-    piezas = Producto.objects.all()
-    context = {'productos': piezas}
-    return render(request, "control_panel/gestion_de_operaciones/productos/operacion.html", context)
-
-
-def agregar_pieza(request):
-    ImageFormSet = modelformset_factory(Imagenes,
-                                        form=ImagenForm, extra=4)
-    # 'extra' means the number of photos that you can upload
-    if request.method == 'POST':
-        pieceForm = PiezaForm(request.POST or None, request.FILES or None)
-        formset = ImageFormSet(request.POST or None, request.FILES or None,
-                               queryset=Imagenes.objects.none())
-        if pieceForm.is_valid() and formset.is_valid():
-            piece_form = pieceForm.save(commit=False)
-            # piece_form.user = request.user
-            piece_form.save()
-
-            for form in formset.cleaned_data:
-                # this helps to not crash if the user
-                # do not upload all the photos
-                if form:
-                    imagen = form['imagen']
-                    # imagen_principal = form['imagen_principal']
-                    photo = Imagenes(pieza=piece_form, imagen=imagen)
-                    photo.save()
-            # use django messages framework
-            messages.success(request,
-                             "La pieza se agregó satisfactoriamente!")
-            return redirect("piezas")
-        else:
-            print(pieceForm.errors, formset.errors)
-    else:
-        pieceForm = PiezaForm()
-        formset = ImageFormSet(queryset=Imagenes.objects.none())
-    return render(request, 'control_panel/gestion_de_operaciones/productos/insertar_operacion.html',
-                  {'pieceForm': pieceForm, 'formset': formset})
-
-
-def modificar_pieza(request, id_p=None):
-    if request.user.is_authenticated:
-        pieza_custom = Producto.objects.get(id=id_p)
-        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-        # cant_notificaciones = len(notificaciones)
-        update_form = PiezaForm(request.POST or None, request.FILES or None, instance=pieza_custom)
-        if update_form.is_valid():
-            edit = update_form.save(commit=False)
-            edit.save()
-            messages.success(request, 'Pieza modificada correctamente')
-            return redirect('piezas')
-        context = {'pieza': pieza_custom, 'update_form': update_form, }
-        return render(request,
-                      'control_panel/gestion_de_operaciones/productos/modificar_operacion.html',
-                      context)
-    return redirect('login_user')
-
-
-def eliminar_pieza(request, id_p):
-    if request.user.is_authenticated:
-        p = Producto.objects.get(id=id_p)
-        p.delete()
-        return redirect('piezas')
-    return redirect('login_user')
-
-
-# --------------- CRUD Operaciones----------------------#
-
-
-def operaciones(request):
-    operaciones = Operacion.objects.all()
-    context = {'operaciones': operaciones}
-    return render(request,
-                  "control_panel/gestion_de_operaciones/operaciones/operaciones.html", context)
-
-
-def certificado_pieza(request, id_cp=None):
-    certificado_pieza = Certificacion_GAM.objects.get(id=id_cp)
-    imagenes = Imagenes.objects.filter(pieza=certificado_pieza.pieza.id)
-    context = {'certificado_GAM_pieza': certificado_pieza,
-               'imagenes': imagenes}
-    return render(request,
-                  "control_panel/gestion_de_operaciones/operaciones/detalles_de_operacion.html", context)
-
-
-def modificar_certificado_pieza(request):
-    context = {}
-    return render(request,
-                  "control_panel/gestion_de_operaciones/operaciones/modificar_certificado_pieza_GAM.html",
-                  context)
-
-
-def agregar_certificacion_pieza_por_GAM(request):
-    if request.method == 'POST':
-        certificacion_GAM = Certificacion_GAMForm(request.POST or None)
-        # formset = ImageFormSet(request.POST or None, request.FILES or None,
-        #                        queryset=Imagenes.objects.none())
-        if certificacion_GAM.is_valid():
-            certificacion_GAM = certificacion_GAM.save(commit=False)
-            # piece_form.user = request.user
-            certificacion_GAM.save()
-
-            messages.success(request,
-                             "La certificación por GAM de la pieza se agregó satisfactoriamente!")
-            return redirect("certificados_por_GAM")
-        else:
-            print(certificacion_GAM.errors)
-    else:
-        certificacion_GAM = Certificacion_GAMForm()
-    return render(request, 'control_panel/gestion_de_operaciones/operaciones/realizar_operacion.html',
-                  {'certificacion_GAMForm': certificacion_GAM})
-
-    # --------------- CRUD Categoria de Publicaciones----------------------#
+#
+# # -----------------CRDU Categorias de Piezas---------------------------#
+# def categorias_piezas(request):
+#     if request.user.is_authenticated:
+#         categorias_piezas = Categoria_Producto.objects.all()
+#         context = {'categorias_productos': categorias_piezas}
+#         return render(request,
+#                       "control_panel/gestion_de_operaciones/productos/categorias_productos/categorias_piezas.html",
+#                       context)
+#     return redirect('login_user')
+#
+#
+# def agregar_categoria_pieza(request):
+#     if request.user.is_authenticated:
+#         if request.method == "POST":
+#             nombre_categoria = request.POST.get('nombre_categoria')
+#             descripcion_categoria = request.POST.get('descripcion_categoria')
+#             tipo_pieza = request.POST.get('tipo_pieza')
+#
+#             c = Categoria_Producto.objects.create(
+#                 nombre_categoria=nombre_categoria,
+#                 descripcion=descripcion_categoria,
+#                 tipo_pieza=tipo_pieza
+#             )
+#             c.save()
+#             messages.success(request, 'La categoría de pieza fue registrada satisfactoriamente')
+#             return redirect('categorias_piezas')
+#
+#         context = {}
+#         return render(request,
+#                       "control_panel/gestion_de_operaciones/productos/categorias_productos/insertar_categ_pieza.html",
+#                       context)
+#     return redirect('login_user')
+#
+#
+# def modificar_categoria_pieza(request, id_cp=None):
+#     if request.user.is_authenticated:
+#         categoria_pieza_custom = Categoria_Producto.objects.get(id=id_cp)
+#         # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
+#         # cant_notificaciones = len(notificaciones)
+#         if request.method == 'POST':
+#             nombre_categoria = request.POST.get('nombre_categoria')
+#             descripcion_categoria = request.POST.get('descripcion_categoria')
+#             tipo_pieza = request.POST.get('tipo_pieza')
+#
+#             Categoria_Producto.objects.filter(id=id_cp).update(
+#                 nombre_categoria=nombre_categoria,
+#                 descripcion=descripcion_categoria,
+#                 tipo_pieza=tipo_pieza
+#             )
+#             messages.success(request, 'La categoría de pieza fue editada satisfactoriamente')
+#             return redirect('categorias_piezas')
+#         context = {'categoria_pieza': categoria_pieza_custom}
+#         return render(request,
+#                       'control_panel/gestion_de_operaciones/productos/categorias_productos/modificar_categoria_piezas.html',
+#                       context)
+#     return redirect('login_user')
+#
+#
+# def eliminar_categoria_pieza(request, id_cp):
+#     if request.user.is_authenticated:
+#         cp = Categoria_Producto.objects.get(id=id_cp)
+#         cp.delete()
+#         return redirect('categorias_piezas')
+#     return redirect('login_user')
+#
+#
+# # -----------------CRDU Piezas----------------------------------------#
+# def piezas(request):
+#     piezas = Producto.objects.all()
+#     context = {'productos': piezas}
+#     return render(request, "control_panel/gestion_de_operaciones/productos/operacion.html", context)
+#
+#
+# def agregar_pieza(request):
+#     ImageFormSet = modelformset_factory(Imagenes,
+#                                         form=ImagenForm, extra=4)
+#     # 'extra' means the number of photos that you can upload
+#     if request.method == 'POST':
+#         pieceForm = PiezaForm(request.POST or None, request.FILES or None)
+#         formset = ImageFormSet(request.POST or None, request.FILES or None,
+#                                queryset=Imagenes.objects.none())
+#         if pieceForm.is_valid() and formset.is_valid():
+#             piece_form = pieceForm.save(commit=False)
+#             # piece_form.user = request.user
+#             piece_form.save()
+#
+#             for form in formset.cleaned_data:
+#                 # this helps to not crash if the user
+#                 # do not upload all the photos
+#                 if form:
+#                     imagen = form['imagen']
+#                     # imagen_principal = form['imagen_principal']
+#                     photo = Imagenes(pieza=piece_form, imagen=imagen)
+#                     photo.save()
+#             # use django messages framework
+#             messages.success(request,
+#                              "La pieza se agregó satisfactoriamente!")
+#             return redirect("piezas")
+#         else:
+#             print(pieceForm.errors, formset.errors)
+#     else:
+#         pieceForm = PiezaForm()
+#         formset = ImageFormSet(queryset=Imagenes.objects.none())
+#     return render(request, 'control_panel/gestion_de_operaciones/productos/insertar_operacion.html',
+#                   {'pieceForm': pieceForm, 'formset': formset})
+#
+#
+# def modificar_pieza(request, id_p=None):
+#     if request.user.is_authenticated:
+#         pieza_custom = Producto.objects.get(id=id_p)
+#         # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
+#         # cant_notificaciones = len(notificaciones)
+#         update_form = PiezaForm(request.POST or None, request.FILES or None, instance=pieza_custom)
+#         if update_form.is_valid():
+#             edit = update_form.save(commit=False)
+#             edit.save()
+#             messages.success(request, 'Pieza modificada correctamente')
+#             return redirect('piezas')
+#         context = {'pieza': pieza_custom, 'update_form': update_form, }
+#         return render(request,
+#                       'control_panel/gestion_de_operaciones/productos/modificar_operacion.html',
+#                       context)
+#     return redirect('login_user')
+#
+#
+# def eliminar_pieza(request, id_p):
+#     if request.user.is_authenticated:
+#         p = Producto.objects.get(id=id_p)
+#         p.delete()
+#         return redirect('piezas')
+#     return redirect('login_user')
+#
+#
+# # --------------- CRUD Operaciones----------------------#
+#
+#
+# def operaciones(request):
+#     operaciones = Operacion.objects.all()
+#     context = {'operaciones': operaciones}
+#     return render(request,
+#                   "control_panel/gestion_de_operaciones/operaciones/operaciones.html", context)
+#
+#
+# def certificado_pieza(request, id_cp=None):
+#     certificado_pieza = Certificacion_GAM.objects.get(id=id_cp)
+#     imagenes = Imagenes.objects.filter(pieza=certificado_pieza.pieza.id)
+#     context = {'certificado_GAM_pieza': certificado_pieza,
+#                'imagenes': imagenes}
+#     return render(request,
+#                   "control_panel/gestion_de_operaciones/operaciones/detalles_de_operacion.html", context)
+#
+#
+# def modificar_certificado_pieza(request):
+#     context = {}
+#     return render(request,
+#                   "control_panel/gestion_de_operaciones/operaciones/modificar_certificado_pieza_GAM.html",
+#                   context)
+#
+#
+# def agregar_certificacion_pieza_por_GAM(request):
+#     if request.method == 'POST':
+#         certificacion_GAM = Certificacion_GAMForm(request.POST or None)
+#         # formset = ImageFormSet(request.POST or None, request.FILES or None,
+#         #                        queryset=Imagenes.objects.none())
+#         if certificacion_GAM.is_valid():
+#             certificacion_GAM = certificacion_GAM.save(commit=False)
+#             # piece_form.user = request.user
+#             certificacion_GAM.save()
+#
+#             messages.success(request,
+#                              "La certificación por GAM de la pieza se agregó satisfactoriamente!")
+#             return redirect("certificados_por_GAM")
+#         else:
+#             print(certificacion_GAM.errors)
+#     else:
+#         certificacion_GAM = Certificacion_GAMForm()
+#     return render(request, 'control_panel/gestion_de_operaciones/operaciones/realizar_operacion.html',
+#                   {'certificacion_GAMForm': certificacion_GAM})
+#
+#     # --------------- CRUD Categoria de Publicaciones----------------------#
 
 
 # --------------- Gestion de Usuarios----------------------#

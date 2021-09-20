@@ -21,10 +21,10 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'index' %}">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
             <div class="sidebar-brand-icon">
-                <img style="width: 55%"
-                     src="{% static 'control_panel/img/logo/Grupo 29.png' %}" alt="logo">
+{#                <img style="width: 55%"#}
+{#                     src="{% static 'control_panel/img/logo/Grupo 29.png' %}" alt="logo">#}
             </div>
             {#            <div class="sidebar-brand-text mx-5">GAM</div>#}
         </a>
@@ -42,14 +42,14 @@
             <a class="nav-link collapsed" data-toggle="collapse" data-target="#collapseBootstrap"
                aria-expanded="true" aria-controls="collapseBootstrap">
                 <i class="far fa-fw fa-clipboard"></i>
-                <span>Piezas</span>
+                <span>Productos</span>
             </a>
             <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap"
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Piezas</h6>
-                    <a class="collapse-item" href="{% url 'categorias_piezas' %}">Categorías</a>
-                    <a class="collapse-item" href="{% url 'piezas' %}">Piezas</a>
+                    <a class="collapse-item" href="">Categorías</a>
+                    <a class="collapse-item" href="">Productos</a>
 
                 </div>
             </div>
@@ -59,31 +59,31 @@
                aria-expanded="true"
                aria-controls="collapsePage">
                 <i class="fas fa-fw fa-atlas"></i>
-                <span>Servicios</span>
+                <span>Operaciones</span>
             </a>
             <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Certificación por GAM</h6>
-                    <a class="collapse-item" href="{% url 'certificados_por_GAM' %}">Certificados por GAM</a>
+                    <h6 class="collapse-header">Operaciones</h6>
+                    <a class="collapse-item" href="">Ventas</a>
                 </div>
             </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage1"
-               aria-expanded="true"
-               aria-controls="collapsePage1">
-                <i class="fas fa-fw fa-newspaper"></i>
-                <span>Blog</span>
-            </a>
-            <div id="collapsePage1" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Publicaciones</h6>
-                    <a class="collapse-item" href="{% url 'categorias_publicaciones' %}">Categorías</a>
-                    <a class="collapse-item" href="{% url 'publicaciones' %}">Publicaciones</a>
-
-                </div>
-            </div>
-        </li>
+{#        <li class="nav-item">#}
+{#            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage1"#}
+{#               aria-expanded="true"#}
+{#               aria-controls="collapsePage1">#}
+{#                <i class="fas fa-fw fa-newspaper"></i>#}
+{#                <span>Blog</span>#}
+{#            </a>#}
+{#            <div id="collapsePage1" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">#}
+{#                <div class="bg-white py-2 collapse-inner rounded">#}
+{#                    <h6 class="collapse-header">Publicaciones</h6>#}
+{#                    <a class="collapse-item" href="{% url 'categorias_publicaciones' %}">Categorías</a>#}
+{#                    <a class="collapse-item" href="{% url 'publicaciones' %}">Publicaciones</a>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </li>#}
         {% if request.user.is_administrador or request.user.is_superuser %}
             <hr class="sidebar-divider">
             <div class="sidebar-heading">

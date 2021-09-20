@@ -130,7 +130,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'lepasteleapp.User'
+AUTH_USER_MODEL = 'lepasteleapp.User'
 
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

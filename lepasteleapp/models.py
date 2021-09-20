@@ -76,14 +76,14 @@ class Operacion(models.Model):
         return str(self.productos)
 
 
-def get_image_filename(instance, filename):
-    nombre_pieza = instance.pieza.nombre_producto
-    slug = slugify(nombre_pieza)
-    return "productos_imagenes/%s-%s" % (slug, filename)
+# def get_image_filename(instance, filename):
+#     nombre_pieza = instance.pieza.nombre_producto
+#     slug = slugify(nombre_pieza)
+#     return "productos_imagenes/%s-%s" % (slug, filename)
 
-
-class Imagenes(models.Model):
-    producto = models.ForeignKey(Producto, default=None, on_delete=models.CASCADE)
-    imagen = models.ImageField(upload_to=get_image_filename,
-                               verbose_name='imagen')
+#
+# class Imagenes(models.Model):
+#     producto = models.ForeignKey(Producto, default=None, on_delete=models.CASCADE)
+#     imagen = models.ImageField(upload_to=get_image_filename,
+#                                verbose_name='imagen')
 
