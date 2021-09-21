@@ -1,11 +1,11 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Agregar Pieza</h1>
+    <h1 class="h3 mb-0 text-gray-800">Agregar Producto</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">Gestión del sitio</li>
-        <li class="breadcrumb-item"><a href="{% url 'piezas' %}">Piezas</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Agregar Pieza</li>
+        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Productos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Agregar Producto</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -18,7 +18,7 @@
 
             </div>
             <div class="card-body">
-                <form enctype="multipart/form-data" action="{% url 'insertar_pieza' %}" method="post">{% csrf_token %}
+                <form enctype="multipart/form-data" action="" method="post">{% csrf_token %}
                     {% for hidden in pieceForm.hidden_fields %}
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label"

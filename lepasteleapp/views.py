@@ -6,7 +6,7 @@ from django.contrib.auth import logout as do_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 
-from lepasteleapp.models import User,Producto,Pedido,Operacion
+from lepasteleapp.models import User, Producto, Pedido, Operacion, Categoria_Producto
 from django.db import transaction
 # from .forms import *
 from django.contrib.auth.decorators import login_required
@@ -46,114 +46,103 @@ def panel_home(request):
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
 
+
 #
-# # -----------------CRDU Categorias de Piezas---------------------------#
-# def categorias_piezas(request):
-#     if request.user.is_authenticated:
-#         categorias_piezas = Categoria_Producto.objects.all()
-#         context = {'categorias_productos': categorias_piezas}
-#         return render(request,
-#                       "control_panel/gestion_de_operaciones/productos/categorias_productos/categorias_piezas.html",
-#                       context)
-#     return redirect('login_user')
-#
-#
-# def agregar_categoria_pieza(request):
-#     if request.user.is_authenticated:
-#         if request.method == "POST":
-#             nombre_categoria = request.POST.get('nombre_categoria')
-#             descripcion_categoria = request.POST.get('descripcion_categoria')
-#             tipo_pieza = request.POST.get('tipo_pieza')
-#
-#             c = Categoria_Producto.objects.create(
-#                 nombre_categoria=nombre_categoria,
-#                 descripcion=descripcion_categoria,
-#                 tipo_pieza=tipo_pieza
-#             )
-#             c.save()
-#             messages.success(request, 'La categoría de pieza fue registrada satisfactoriamente')
-#             return redirect('categorias_piezas')
-#
-#         context = {}
-#         return render(request,
-#                       "control_panel/gestion_de_operaciones/productos/categorias_productos/insertar_categ_pieza.html",
-#                       context)
-#     return redirect('login_user')
-#
-#
-# def modificar_categoria_pieza(request, id_cp=None):
-#     if request.user.is_authenticated:
-#         categoria_pieza_custom = Categoria_Producto.objects.get(id=id_cp)
-#         # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-#         # cant_notificaciones = len(notificaciones)
-#         if request.method == 'POST':
-#             nombre_categoria = request.POST.get('nombre_categoria')
-#             descripcion_categoria = request.POST.get('descripcion_categoria')
-#             tipo_pieza = request.POST.get('tipo_pieza')
-#
-#             Categoria_Producto.objects.filter(id=id_cp).update(
-#                 nombre_categoria=nombre_categoria,
-#                 descripcion=descripcion_categoria,
-#                 tipo_pieza=tipo_pieza
-#             )
-#             messages.success(request, 'La categoría de pieza fue editada satisfactoriamente')
-#             return redirect('categorias_piezas')
-#         context = {'categoria_pieza': categoria_pieza_custom}
-#         return render(request,
-#                       'control_panel/gestion_de_operaciones/productos/categorias_productos/modificar_categoria_piezas.html',
-#                       context)
-#     return redirect('login_user')
-#
-#
-# def eliminar_categoria_pieza(request, id_cp):
-#     if request.user.is_authenticated:
-#         cp = Categoria_Producto.objects.get(id=id_cp)
-#         cp.delete()
-#         return redirect('categorias_piezas')
-#     return redirect('login_user')
-#
-#
-# # -----------------CRDU Piezas----------------------------------------#
-# def piezas(request):
-#     piezas = Producto.objects.all()
-#     context = {'productos': piezas}
-#     return render(request, "control_panel/gestion_de_operaciones/productos/operacion.html", context)
-#
-#
-# def agregar_pieza(request):
-#     ImageFormSet = modelformset_factory(Imagenes,
-#                                         form=ImagenForm, extra=4)
-#     # 'extra' means the number of photos that you can upload
-#     if request.method == 'POST':
-#         pieceForm = PiezaForm(request.POST or None, request.FILES or None)
-#         formset = ImageFormSet(request.POST or None, request.FILES or None,
-#                                queryset=Imagenes.objects.none())
-#         if pieceForm.is_valid() and formset.is_valid():
-#             piece_form = pieceForm.save(commit=False)
-#             # piece_form.user = request.user
-#             piece_form.save()
-#
-#             for form in formset.cleaned_data:
-#                 # this helps to not crash if the user
-#                 # do not upload all the photos
-#                 if form:
-#                     imagen = form['imagen']
-#                     # imagen_principal = form['imagen_principal']
-#                     photo = Imagenes(pieza=piece_form, imagen=imagen)
-#                     photo.save()
-#             # use django messages framework
-#             messages.success(request,
-#                              "La pieza se agregó satisfactoriamente!")
-#             return redirect("piezas")
-#         else:
-#             print(pieceForm.errors, formset.errors)
-#     else:
-#         pieceForm = PiezaForm()
-#         formset = ImageFormSet(queryset=Imagenes.objects.none())
-#     return render(request, 'control_panel/gestion_de_operaciones/productos/insertar_operacion.html',
-#                   {'pieceForm': pieceForm, 'formset': formset})
-#
-#
+# -----------------CRDU Categorias de Piezas---------------------------#
+def categorias_productos(request):
+    if request.user.is_authenticated:
+        categorias_productos = Categoria_Producto.objects.all()
+        context = {'categorias_productos': categorias_productos}
+        return render(request,
+                      "control_panel/gestion_del_sitio/productos/categorias_productos/categorias_productos.html",
+                      context)
+    return redirect('login_user')
+
+
+def agregar_categoria_producto(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            nombre_categoria = request.POST.get('nombre_categoria')
+            descripcion_categoria = request.POST.get('descripcion_categoria')
+
+            c = Categoria_Producto.objects.create(
+                nombre_categoria=nombre_categoria,
+                descripcion=descripcion_categoria
+            )
+            c.save()
+            messages.success(request, 'La categoría fue registrada satisfactoriamente')
+            return redirect('categorias_productos')
+
+        context = {}
+        return render(request,
+                      "control_panel/gestion_del_sitio/productos/categorias_productos/insertar_categ_producto.html",
+                      context)
+    return redirect('login_user')
+
+
+def modificar_categoria_producto(request, id_cp=None):
+    if request.user.is_authenticated:
+        categoria_producto = Categoria_Producto.objects.get(id=id_cp)
+        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
+        # cant_notificaciones = len(notificaciones)
+        if request.method == 'POST':
+            nombre_categoria = request.POST.get('nombre_categoria')
+            descripcion_categoria = request.POST.get('descripcion_categoria')
+
+            Categoria_Producto.objects.filter(id=id_cp).update(
+                nombre_categoria=nombre_categoria,
+                descripcion=descripcion_categoria)
+
+            messages.success(request, 'La categoría de pieza fue editada satisfactoriamente')
+            return redirect('categorias_productos')
+        context = {'categoria_producto': categoria_producto}
+        return render(request,
+                      'control_panel/gestion_del_sitio/productos/categorias_productos'
+                      '/modificar_categoria_producto.html',
+                      context)
+    return redirect('login_user')
+
+
+def eliminar_categoria_producto(request, id_cp):
+    if request.user.is_authenticated:
+        cp = Categoria_Producto.objects.get(id=id_cp)
+        cp.delete()
+        return redirect('categorias_productos')
+    return redirect('login_user')
+
+
+# -----------------CRDU Piezas----------------------------------------#
+def productos(request):
+    productos = Producto.objects.all()
+    context = {'productos': productos}
+    return render(request, "control_panel/gestion_de_operaciones/productos/productos.html", context)
+
+
+def agregar_pieza(request):
+    # ImageFormSet = modelformset_factory(Imagenes,
+    #                                     form=ImagenForm, extra=4)
+    # 'extra' means the number of photos that you can upload
+    if request.method == 'POST':
+        productoForm = PiezaForm(request.POST or None, request.FILES or None)
+        # formset = ImageFormSet(request.POST or None, request.FILES or None,
+        #                        queryset=Imagenes.objects.none())
+        if productoForm.is_valid():
+            producto_form = productoForm.save(commit=False)
+            # producto_form.user = request.user
+            producto_form.save()
+            # use django messages framework
+            messages.success(request,
+                             "La pieza se agregó satisfactoriamente!")
+            return redirect("piezas")
+        else:
+            print(productoForm.errors)
+    else:
+        pieceForm = PiezaForm()
+        formset = ImageFormSet(queryset=Imagenes.objects.none())
+    return render(request, 'control_panel/gestion_de_operaciones/productos/insertar_operacion.html',
+                  {'pieceForm': pieceForm, 'formset': formset})
+
+
 # def modificar_pieza(request, id_p=None):
 #     if request.user.is_authenticated:
 #         pieza_custom = Producto.objects.get(id=id_p)

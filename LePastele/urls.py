@@ -27,17 +27,18 @@ urlpatterns = [
     path('salir', views.logout, name="salir"),
     path('panel', views.panel_home, name="panel"),
 
-    # # -----------------Gestion del Sitio-----------------
-    # # Crud Categorias de Productos
-    # path('panel/productos/categorias', views.categorias_piezas, name="categorias_productos"),
-    # path('panel/productos/insertar_categoria_pieza', views.agregar_categoria_pieza, name="insertar_categoria_pieza"),
-    # path('panel/productos/editar_categoria_pieza/<int:id_cp>', views.modificar_categoria_pieza,
-    #      name="editar_categoria_pieza"),
-    # path('panel/productos/eliminar_categoria_pieza/<int:id_cp>', views.eliminar_categoria_pieza,
-    #      name="eliminar_categoria_pieza"),
-    #
-    # # Crud de Productos
-    # path('panel/productos', views.piezas, name="productos"),
+    # -----------------Gestion del Sitio-----------------
+    # Crud Categorias de Productos
+    path('panel/productos/categorias', views.categorias_productos, name="categorias_productos"),
+    path('panel/productos/insertar_categoria_producto', views.agregar_categoria_producto,
+         name="insertar_categoria_producto"),
+    path('panel/productos/editar_categoria_producto/<int:id_cp>', views.modificar_categoria_producto,
+         name="editar_categoria_producto"),
+    path('panel/productos/eliminar_categoria_producto/<int:id_cp>', views.eliminar_categoria_producto,
+         name="eliminar_categoria_producto"),
+
+    # Crud de Productos
+    path('panel/productos', views.productos, name="productos"),
     # path('panel/productos/insertar_pieza', views.agregar_pieza, name="insertar_pieza"),
     # path('panel/productos/editar_pieza/<int:id_p>', views.modificar_pieza, name="editar_pieza"),
     # path('panel/productos/eliminar_pieza/<int:id_p>', views.eliminar_pieza,
@@ -62,4 +63,3 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

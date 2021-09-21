@@ -1,11 +1,11 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Categorías de Piezas</h1>
+    <h1 class="h3 mb-0 text-gray-800">Categorías de Productos</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'piezas' %}">Piezas</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Categorías de Piezas</li>
+        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Piezas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Categorías de Productos</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -15,7 +15,7 @@
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Tableros de Control</h6>
-                <a href="{% url 'insertar_categoria_pieza' %}" type="button" class="btn btn-primary mb-1"> <i
+                <a href="{% url 'insertar_categoria_producto' %}" type="button" class="btn btn-primary mb-1"> <i
                         class="fas fa-plus"></i> Agregar</a>
             </div>
             <div class="table-responsive p-3">
@@ -25,7 +25,6 @@
                         <th>Nro</th>
                         <th>Nombre</th>
                         <th>Descripcion</th>
-                        <th>Tipo de Pieza</th>
 
                         <th>Acciones</th>
                     </tr>
@@ -35,29 +34,24 @@
                         <th>Nro</th>
                         <th>Nombre</th>
                         <th>Descripcion</th>
-                        <th>Tipo de Pieza</th>
 
                         <th>Acciones</th>
                     </tr>
                     </tfoot>
                     <tbody>
-                    {% for cp in categorias_piezas %}
+                    {% for cp in categorias_productos %}
                         <tr>
                             <td>{{ cp.id }}</td>
                             <td>{{ cp.nombre_categoria }}</td>
-                            <td>{{ cp.descripcion}}</td>
-                            {% if cp.tipo_pieza == True %}
-                                <td>Joya</td>
-                            {% else %}
-                                <td>Gema</td>
-                            {% endif %}
+                            <td>{{ cp.descripcion }}</td>
                             <td>
-                                <a href="{% url 'editar_categoria_pieza' cp.id %}" title="Editar categoria de pieza"class="btn btn-primary btn-sm">
+                                <a href="{% url 'editar_categoria_producto' cp.id %}" title="Editar categoria de pieza"
+                                   class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="#" data-href="{% url 'eliminar_categoria_pieza' cp.id %}" data-toggle="modal"
+                                <a href="#" data-href="{% url 'eliminar_categoria_producto' cp.id %}" data-toggle="modal"
                                    class="btn btn-primary btn-sm" data-id="{{ cp.id }}"
-                                   title="Eliminar categoria de pieza"
+                                   title="Eliminar categoria de producto"
                                    data-target="#confirm-delete">
                                     <i class="fas fa-trash"></i>
                                 </a>
@@ -77,7 +71,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar esta categoria de pieza?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar esta categoria de producto?</h5>
                     {#            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
                     {#              <span aria-hidden="true">&times;</span>#}
                     {#            </button>#}
