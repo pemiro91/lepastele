@@ -2,44 +2,61 @@ import datetime
 
 from django import forms
 
-from lepasteleapp.models import Producto
+from lepasteleapp.models import Producto, Operacion
 
 
-class PiezaForm(forms.ModelForm):
+class ProductoForm(forms.ModelForm):
     class Meta:
-        model = Pieza
-        fields = ('nombre_pieza', 'descripcion', 'categoria_pieza', 'precio', 'numero_referencia', 'url_video',
-                  'imagen_principal')
+        model = Producto
+        fields = ('nombre_producto', 'descripcion', 'categoria_producto', 'precio')
 
         labels = {
-            "nombre_pieza": "Nombre de la pieza",
+            "nombre_producto": "Nombre del producto",
             "descripcion": "Descripcion",
-            "categoria_pieza": "Categoria de la pieza",
-            "precio": "Precio",
-            "numero_referencia": "Número de referencia",
-            "url_video": "URL de Video",
-            "imagen_principal": "Imagen principal",
+            "categoria_producto": "Categoria de producto",
+            "precio": "Precio"}
 
-        }
         widgets = {
-            'nombre_pieza': forms.TextInput(
-                attrs={'class': 'form-control text', 'placeholder': 'Escriba el nombre de la '
-                                                                    'pieza', }),
+            'nombre_producto': forms.TextInput(
+                attrs={'class': 'form-control text', 'placeholder': 'Escriba el nombre del '
+                                                                    'producto', }),
 
             'descripcion': forms.Textarea(
                 attrs={'class': 'form-control textarea', 'rows': 2, 'placeholder': 'Escriba la '
-                                                                                   'descripción de la '
-                                                                                   'pieza', }),
-            'categoria_pieza': forms.Select(attrs={'class': 'select form-control', 'label': 'Seleccione '
-                                                                                            'la '
-                                                                                            'categoría', }),
+                                                                                   'descripción del '
+                                                                                   'producto', }),
+            'categoria_producto': forms.Select(attrs={'class': 'select form-control', 'label': 'Seleccione '
+                                                                                               'la '
+                                                                                               'categoría', }),
             'precio': forms.TextInput(
-                attrs={'class': 'form-control number ', 'placeholder': 'Escriba el precio de la pieza', }),
-            'numero_referencia': forms.TextInput(
-                attrs={'class': 'form-control number', 'placeholder': 'Escriba el número de referencia', }),
-            'url_video': forms.URLInput(
-                attrs={'class': 'form-control ', 'placeholder': 'Escriba la url de video', }),
-            # 'imagen_principal': forms.FileInput(
-            #     attrs={'class': 'form-control image', 'placeholder': 'Seleccione el archivo', }),
+                attrs={'class': 'form-control number ', 'placeholder': 'Escriba el precio de la pieza', })
 
         }
+
+
+# class OperacionForm(forms.ModelForm):
+#     class Meta:
+#         model = Operacion
+#         fields = ('pedidos', 'fecha_operacion', 'tipo_pago')
+#
+#         labels = {
+#             "pedidos": "Pedido(s)",
+#             "tipo_pago": "Tipo de pago",
+#             "fecha_operacion": "Fecha"}
+#
+#         widgets = {
+#             'nombre_producto': forms.TextInput(
+#                 attrs={'class': 'form-control text', 'placeholder': 'Escriba el nombre del '
+#                                                                     'producto', }),
+#
+#             'descripcion': forms.Textarea(
+#                 attrs={'class': 'form-control textarea', 'rows': 2, 'placeholder': 'Escriba la '
+#                                                                                    'descripción del '
+#                                                                                    'producto', }),
+#             'pedidos': forms.Select(attrs={'class': 'select multiple form-control ', 'label': 'Seleccione '
+#                                                                                                'la '
+#                                                                                                'categoría', }),
+#             'precio': forms.TextInput(
+#                 attrs={'class': 'form-control number ', 'placeholder': 'Escriba el precio de la pieza', })
+#
+#         }

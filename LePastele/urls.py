@@ -39,19 +39,14 @@ urlpatterns = [
 
     # Crud de Productos
     path('panel/productos', views.productos, name="productos"),
-    # path('panel/productos/insertar_pieza', views.agregar_pieza, name="insertar_pieza"),
-    # path('panel/productos/editar_pieza/<int:id_p>', views.modificar_pieza, name="editar_pieza"),
-    # path('panel/productos/eliminar_pieza/<int:id_p>', views.eliminar_pieza,
-    #      name="eliminar_pieza"),
+    path('panel/productos/insertar_producto', views.agregar_producto, name="insertar_producto"),
+    path('panel/productos/editar_producto/<int:id_p>', views.modificar_producto, name="editar_producto"),
+    path('panel/productos/eliminar_producto/<int:id_p>', views.eliminar_producto,
+         name="eliminar_producto"),
     #
     # # Crud de Operaciones
-    # path('panel/operaciones', views.operaciones, name="certificados_por_GAM"),
-    # path('panel/servicios/certificados_por_GAM/certificado_pieza/<int:id_cp>', views.certificado_pieza,
-    #      name="certificado_pieza"),
-    # path('panel/servicios/certificados_por_GAM/modificar_certificacdo_pieza', views.modificar_certificado_pieza,
-    #      name="modificar_certificado_pieza"),
-    # path('panel/productos/agregar_certificacion_por_GAM', views.agregar_certificacion_pieza_por_GAM,
-    #      name="agregar_certificacion_por_GAM"),
+    path('panel/operaciones', views.operaciones, name="operaciones"),
+    path('panel/operaciones/registrar_venta', views.registrar_venta, name="registrar_venta"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios

@@ -6,9 +6,9 @@ from django.contrib.auth import logout as do_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 
-from lepasteleapp.models import User, Producto, Pedido, Operacion, Categoria_Producto
+from lepasteleapp.models import (User, Producto, Pedido, Operacion, Categoria_Producto)
 from django.db import transaction
-# from .forms import *
+from .forms import ProductoForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -115,108 +115,86 @@ def eliminar_categoria_producto(request, id_cp):
 def productos(request):
     productos = Producto.objects.all()
     context = {'productos': productos}
-    return render(request, "control_panel/gestion_de_operaciones/productos/productos.html", context)
+    return render(request, "control_panel/gestion_del_sitio/productos/productos.html", context)
 
 
-def agregar_pieza(request):
-    # ImageFormSet = modelformset_factory(Imagenes,
-    #                                     form=ImagenForm, extra=4)
-    # 'extra' means the number of photos that you can upload
+def agregar_producto(request):
     if request.method == 'POST':
-        productoForm = PiezaForm(request.POST or None, request.FILES or None)
-        # formset = ImageFormSet(request.POST or None, request.FILES or None,
-        #                        queryset=Imagenes.objects.none())
+        productoForm = ProductoForm(request.POST or None, request.FILES or None)
         if productoForm.is_valid():
             producto_form = productoForm.save(commit=False)
-            # producto_form.user = request.user
             producto_form.save()
-            # use django messages framework
             messages.success(request,
-                             "La pieza se agregó satisfactoriamente!")
-            return redirect("piezas")
+                             "El producto se agregó satisfactoriamente!")
+            return redirect("productos")
         else:
             print(productoForm.errors)
     else:
-        pieceForm = PiezaForm()
-        formset = ImageFormSet(queryset=Imagenes.objects.none())
-    return render(request, 'control_panel/gestion_de_operaciones/productos/insertar_operacion.html',
-                  {'pieceForm': pieceForm, 'formset': formset})
+        productoForm = ProductoForm()
+    return render(request, 'control_panel/gestion_del_sitio/productos/insertar_producto.html',
+                  {'productoForm': productoForm})
 
 
-# def modificar_pieza(request, id_p=None):
-#     if request.user.is_authenticated:
-#         pieza_custom = Producto.objects.get(id=id_p)
-#         # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-#         # cant_notificaciones = len(notificaciones)
-#         update_form = PiezaForm(request.POST or None, request.FILES or None, instance=pieza_custom)
-#         if update_form.is_valid():
-#             edit = update_form.save(commit=False)
-#             edit.save()
-#             messages.success(request, 'Pieza modificada correctamente')
-#             return redirect('piezas')
-#         context = {'pieza': pieza_custom, 'update_form': update_form, }
-#         return render(request,
-#                       'control_panel/gestion_de_operaciones/productos/modificar_operacion.html',
-#                       context)
-#     return redirect('login_user')
-#
-#
-# def eliminar_pieza(request, id_p):
-#     if request.user.is_authenticated:
-#         p = Producto.objects.get(id=id_p)
-#         p.delete()
-#         return redirect('piezas')
-#     return redirect('login_user')
-#
-#
-# # --------------- CRUD Operaciones----------------------#
-#
-#
-# def operaciones(request):
-#     operaciones = Operacion.objects.all()
-#     context = {'operaciones': operaciones}
-#     return render(request,
-#                   "control_panel/gestion_de_operaciones/operaciones/operaciones.html", context)
-#
-#
-# def certificado_pieza(request, id_cp=None):
-#     certificado_pieza = Certificacion_GAM.objects.get(id=id_cp)
-#     imagenes = Imagenes.objects.filter(pieza=certificado_pieza.pieza.id)
-#     context = {'certificado_GAM_pieza': certificado_pieza,
-#                'imagenes': imagenes}
-#     return render(request,
-#                   "control_panel/gestion_de_operaciones/operaciones/detalles_de_operacion.html", context)
-#
-#
-# def modificar_certificado_pieza(request):
-#     context = {}
-#     return render(request,
-#                   "control_panel/gestion_de_operaciones/operaciones/modificar_certificado_pieza_GAM.html",
-#                   context)
-#
-#
-# def agregar_certificacion_pieza_por_GAM(request):
-#     if request.method == 'POST':
-#         certificacion_GAM = Certificacion_GAMForm(request.POST or None)
-#         # formset = ImageFormSet(request.POST or None, request.FILES or None,
-#         #                        queryset=Imagenes.objects.none())
-#         if certificacion_GAM.is_valid():
-#             certificacion_GAM = certificacion_GAM.save(commit=False)
-#             # piece_form.user = request.user
-#             certificacion_GAM.save()
-#
-#             messages.success(request,
-#                              "La certificación por GAM de la pieza se agregó satisfactoriamente!")
-#             return redirect("certificados_por_GAM")
-#         else:
-#             print(certificacion_GAM.errors)
-#     else:
-#         certificacion_GAM = Certificacion_GAMForm()
-#     return render(request, 'control_panel/gestion_de_operaciones/operaciones/realizar_operacion.html',
-#                   {'certificacion_GAMForm': certificacion_GAM})
-#
-#     # --------------- CRUD Categoria de Publicaciones----------------------#
+def modificar_producto(request, id_p=None):
+    if request.user.is_authenticated:
+        producto_custom = Producto.objects.get(id=id_p)
+        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
+        # cant_notificaciones = len(notificaciones)
+        update_form = ProductoForm(request.POST or None, request.FILES or None, instance=producto_custom)
+        if update_form.is_valid():
+            edit = update_form.save(commit=False)
+            edit.save()
+            messages.success(request, 'Prodcuto modificado correctamente')
+            return redirect('productos')
+        context = {'producto': producto_custom, 'update_form': update_form, }
+        return render(request,
+                      'control_panel/gestion_del_sitio/productos/modificar_productos.html',
+                      context)
+    return redirect('login_user')
 
+
+def eliminar_producto(request, id_p):
+    if request.user.is_authenticated:
+        p = Producto.objects.get(id=id_p)
+        p.delete()
+        messages.success(request, 'Prodcuto eliminado satisfactoriamente')
+        return redirect('productos')
+    return redirect('login_user')
+
+
+# --------------- CRUD Operaciones----------------------#
+
+
+def operaciones(request):
+    operaciones = Operacion.objects.all()
+    context = {'operaciones': operaciones}
+    return render(request,
+                  "control_panel/gestion_del_sitio/operaciones/operaciones.html", context)
+
+
+def registrar_venta(request):
+    # if request.user.is_authenticated:
+    #     if request.method == "POST":
+    #         nombre_categoria = request.POST.get('nombre_categoria')
+    #         descripcion_categoria = request.POST.get('descripcion_categoria')
+    #
+    #         c = Categoria_Producto.objects.create(
+    #             nombre_categoria=nombre_categoria,
+    #             descripcion=descripcion_categoria
+    #         )
+    #         c.save()
+    #         messages.success(request, 'La categoría fue registrada satisfactoriamente')
+    #         return redirect('categorias_productos')
+    #
+    #     context = {}
+    #     return render(request,
+    #                   "control_panel/gestion_del_sitio/productos/categorias_productos/insertar_categ_producto.html",
+    #                   context)
+    # return redirect('login_user')
+    context = {}
+    return render(request,
+                  "control_panel/gestion_del_sitio/operaciones/registrar_operacion.html",
+                  context)
 
 # --------------- Gestion de Usuarios----------------------#
 
@@ -247,20 +225,34 @@ def insertar_usuario(request):
                                  'Las contraseñas no coinciden, por favor escriba correctamente la contraseña')
                 return redirect('insertar_usuarios')
             else:
-                if rol_de == 'moderador':
+                if rol_de == 'dependiente':
                     user = User.objects.create_user(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
                         password=password1,
                         username=user_name,
-                        is_moderador=True,
+                        is_dependiente = True,
+                        is_moderador=False,
                         is_administrador=False,
                         sexo=genero
                     )
                     user.save()
                     # messages.success(request, 'Usuario registrado satisfactoriamente')
                     # return redirect('usuarios')
+                elif rol_de == 'moderador':
+                    user = User.objects.create_user(
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        password=password1,
+                        username=user_name,
+                        is_dependiente=False,
+                        is_moderador=True,
+                        is_administrador=False,
+                        sexo=genero
+                    )
+                    user.save()
 
                 else:
                     user = User.objects.create_user(
@@ -269,6 +261,7 @@ def insertar_usuario(request):
                         email=email,
                         password=password1,
                         username=user_name,
+                        is_dependiente=False,
                         is_moderador=False,
                         is_administrador=True,
                         sexo=genero

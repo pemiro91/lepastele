@@ -1,11 +1,11 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Editar Usuario</h1>
+    <h1 class="h3 mb-0 text-gray-800">Modificar Usuario</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="">Gestión de usuarios</a></li>
         <li class="breadcrumb-item"><a href="{% url 'usuarios' %}">Usuarios</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Editar Usuario</li>
+        <li class="breadcrumb-item active" aria-current="page">Modificar Usuario</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -68,11 +68,19 @@
                         <div class="col-sm-9">
                             <select name="rol_de" class="form-control" id="exampleFormControlSelect1">
                                 {% if user.is_moderador %}
+                                    <option value="dependiente" >Dependiente</option>
                                     <option value="moderador" selected>Moderador</option>
                                     <option value="administrador">Administrador</option>
+                                {% elif user.is_dependiente %}
+                                    <option value="dependiente" selected >Dependiente</option>
+                                    <option value="moderador" >Moderador</option>
+                                    <option value="administrador">Administrador</option>
+
                                 {% else %}
-                                    <option value="administrador" selected>Administrador</option>
+                                    <option value="dependiente" >Dependiente</option>
                                     <option value="moderador">Moderador</option>
+                                    <option value="administrador" selected>Administrador</option>
+
                                 {% endif %}
                             </select>
                         </div>
@@ -102,7 +110,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary">Editar Usuario</button>
+                            <button type="submit" class="btn btn-primary">Modifcar Usuario</button>
                         </div>
                     </div>
                 </form>

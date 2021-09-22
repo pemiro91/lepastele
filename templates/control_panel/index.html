@@ -1,73 +1,121 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Tablero de Control</h1>
+    <h1 class="h3 mb-0 text-gray-800">Resumen</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Inicio | Administración</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Tablero de Control</li>
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Inicio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Resumen</li>
     </ol>
 {% endblock %}
 {% block content %}
-    <!-- Invoice Example -->
-    <div class="col-xl-12 col-lg-12  mb-4">
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h6><i class="fas fa-check"></i><b>Error!
-                        </b></h6>
-                        {{ message }}
-                    </div>
-                {% else %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible"
-                         role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h6><i class="fas fa-check"></i><b>
-                            {% if message.tags == 'success' %}
-                                Satisfactorio!
-                            {% elif message.tags == 'warning' %}
-                                Advertencia!
-                            {% endif %}
-                        </b></h6>
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
 
-        {% endif %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Productos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">25</div>
+                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                        {#                            <span class="text-success mr-2"><i class="fa fa-clipboard"></i> 3.48%</span>#}
+                        {#                            <span>Since last month</span>#}
+                        {#                        </div>#}
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Operaciones realizadas</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
+                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                        {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
+                        {#                            <span>Since last month</span>#}
+                        {#                        </div>#}
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-atlas fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+                        {#                            <span>Since last month</span>#}
+                        {#                        </div>#}
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Invoice Example -->
+    <div class="col-xl-12 col-lg-12 mb-4">
         <div class="card">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Últimas 5 Certificaciones realizadas por GAM </h6>
-                <a class="m-0 float-right btn btn-danger btn-sm" href="">Mostrar más <i
+                <h6 class="m-0 font-weight-bold text-primary">Operaciones realizadas en el día </h6>
+                <a class="m-0 float-right btn btn-primary btn-sm" href="">Realizar Cierre <i
                         class="fas fa-chevron-right"></i></a>
             </div>
             <div class="table-responsive">
                 <table class="table align-items-center table-flush">
                     <thead class="thead-light">
                     <tr>
-                        <th>ID Certificado</th>
-                        <th>Pieza</th>
-                        <th>Nro. de reporte GAM</th>
+                        <th>Nro.</th>
+                        <th>Productos</th>
+                        <th>Monto Total a pagar</th>
+                        <th>Monto Pagado</th>
+                        <th>Tipo de Pago</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for operacion in operaciones_del_dia %}
-                        <tr>
-                            <td>{{ operacion.id }}</td>
-                            <td>
-                                <a href="{% url 'piezas' %}">{{ operacion.pieza.nombre_producto }}</a>
-                            </td>
-                            <td>{{ operacion.numero_reporte }}</td>
-                            <td><a href="{% url 'certificado_pieza' operacion.id %}"
-                                   class="btn btn-sm btn-primary">Detalles</a></td>
-                        </tr>
-                    {% endfor %}
+                    <tr>
+                        <td>1</td>
+                        <td>Cake de Chocolate</td>
+                        <td>500.00</td>
+                        <td>505.00</td>
+                        <td>En efectivo</td>
+                        <td><a href=""  class="btn btn-sm btn-primary">Detalles</a></td>
+                    </tr>
+                    {#                    {% for operacion in operaciones_del_dia %}#}
+                    {#                        <tr>#}
+                    {##}
+                    {#                            <td>{{ operacion.id }}</td>#}
+                    {#                            <td>#}
+                    {#                                {% if operacion.productos %}#}
+                    {#                                    {% for op in operacion.pedidos %}#}
+                    {#                                        {{ op}},<br>#}
+                    {#                                    {% endfor %}#}
+                    {#                                {% endif %}#}
+                    {#                            </td>#}
+                    {#                            <td width="25%">{{ operacion.user }}</td>#}
+                    {#                            <td>{{ operacion.tipo_pago }}</td>#}
+                    {#                            <td>22 de Septiembre de 2021</td>#}
+                    {##}
+                    {#                            <td><a href=""#}
+                    {#                                   class="btn btn-sm btn-primary">Detalles</a></td>#}
+                    {##}
+                    {##}
+                    {#                        </tr>#}
+                    {#                    {% endfor %}#}
 
                     </tbody>
                 </table>

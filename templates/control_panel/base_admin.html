@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href="{% static 'control_panel/img/logo/Grupo 6.png' %}" rel="icon">
-    <title>GAM| Administración</title>
+    <link href="{% static 'control_panel/img/icono/icono.png' %}" rel="icon">
+    <title>Le Pastelé| Administración</title>
 
     <link href="{% static 'control_panel/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'control_panel/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
@@ -23,16 +23,16 @@
     <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
             <div class="sidebar-brand-icon">
-{#                <img style="width: 55%"#}
-{#                     src="{% static 'control_panel/img/logo/Grupo 29.png' %}" alt="logo">#}
+                <img
+                        src="{% static 'control_panel/img/icono/icono.png' %}" alt="logo">
             </div>
-            {#            <div class="sidebar-brand-text mx-5">GAM</div>#}
+            <div class="sidebar-brand-text mx-4">Le Pastelé</div>
         </a>
         <hr class="sidebar-divider my-0">
         <li class="nav-item active">
             <a class="nav-link" href="{% url 'panel' %}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Inicio | Administración</span></a>
+                <span>Resumen</span></a>
         </li>
         <hr class="sidebar-divider">
         <div class="sidebar-heading">
@@ -64,26 +64,26 @@
             <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Operaciones</h6>
-                    <a class="collapse-item" href="">Ventas</a>
+                    <a class="collapse-item" href="{% url 'operaciones' %}">Ventas</a>
                 </div>
             </div>
         </li>
-{#        <li class="nav-item">#}
-{#            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage1"#}
-{#               aria-expanded="true"#}
-{#               aria-controls="collapsePage1">#}
-{#                <i class="fas fa-fw fa-newspaper"></i>#}
-{#                <span>Blog</span>#}
-{#            </a>#}
-{#            <div id="collapsePage1" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">#}
-{#                <div class="bg-white py-2 collapse-inner rounded">#}
-{#                    <h6 class="collapse-header">Publicaciones</h6>#}
-{#                    <a class="collapse-item" href="{% url 'categorias_publicaciones' %}">Categorías</a>#}
-{#                    <a class="collapse-item" href="{% url 'publicaciones' %}">Publicaciones</a>#}
-{##}
-{#                </div>#}
-{#            </div>#}
-{#        </li>#}
+        {#        <li class="nav-item">#}
+        {#            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage1"#}
+        {#               aria-expanded="true"#}
+        {#               aria-controls="collapsePage1">#}
+        {#                <i class="fas fa-fw fa-newspaper"></i>#}
+        {#                <span>Blog</span>#}
+        {#            </a>#}
+        {#            <div id="collapsePage1" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">#}
+        {#                <div class="bg-white py-2 collapse-inner rounded">#}
+        {#                    <h6 class="collapse-header">Publicaciones</h6>#}
+        {#                    <a class="collapse-item" href="{% url 'categorias_publicaciones' %}">Categorías</a>#}
+        {#                    <a class="collapse-item" href="{% url 'publicaciones' %}">Publicaciones</a>#}
+        {##}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </li>#}
         {% if request.user.is_administrador or request.user.is_superuser %}
             <hr class="sidebar-divider">
             <div class="sidebar-heading">
@@ -166,6 +166,36 @@
                     {% endblock %}
 
                 </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6><i class="fas fa-check"></i><b>Error!
+                                </b></h6>
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible"
+                                 role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6><i class="fas fa-check"></i><b>
+                                    {% if message.tags == 'success' %}
+                                        Satisfactorio!
+                                    {% elif message.tags == 'warning' %}
+                                        Advertencia!
+                                    {% endif %}
+                                </b></h6>
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                {% endif %}
 
                 <div class="row mb-3">
                     {% block content %}
@@ -191,7 +221,7 @@
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
             <span>copyright &copy; <script> document.write(new Date().getFullYear()); </script> - Desarrollado por
-              <b><a href="" target="_blank">INOVA</a></b>
+              <b><a href="" target="_blank">Equipo PachoHabanaTrans</a></b>
             </span>
                 </div>
             </div>

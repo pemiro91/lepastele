@@ -4,7 +4,7 @@
     <h1 class="h3 mb-0 text-gray-800">Categorías de Productos</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Piezas</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Productos</a></li>
         <li class="breadcrumb-item active" aria-current="page">Categorías de Productos</li>
     </ol>
 {% endblock %}
@@ -45,11 +45,13 @@
                             <td>{{ cp.nombre_categoria }}</td>
                             <td>{{ cp.descripcion }}</td>
                             <td>
-                                <a href="{% url 'editar_categoria_producto' cp.id %}" title="Editar categoria de pieza"
+                                <a href="{% url 'editar_categoria_producto' cp.id %}"
+                                   title="Modificar categoría de producto"
                                    class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="#" data-href="{% url 'eliminar_categoria_producto' cp.id %}" data-toggle="modal"
+                                <a href="#" data-href="{% url 'eliminar_categoria_producto' cp.id %}"
+                                   data-toggle="modal"
                                    class="btn btn-primary btn-sm" data-id="{{ cp.id }}"
                                    title="Eliminar categoria de producto"
                                    data-target="#confirm-delete">

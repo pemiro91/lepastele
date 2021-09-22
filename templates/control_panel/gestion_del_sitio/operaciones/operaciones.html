@@ -1,12 +1,10 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Certificados por GAM</h1>
+    <h1 class="h3 mb-0 text-gray-800">Ventas</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">Gestión del Sitio</li>
-        <li class="breadcrumb-item">Servicios</li>
-        <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'certificados_por_GAM' %}">Certificados por
-            GAM</a></li>
+        <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Ventas</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -16,54 +14,76 @@
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Tableros de Control</h6>
-                <a href="{% url 'agregar_certificacion_por_GAM' %}" type="button" class="btn btn-primary mb-1"><i
-                        class="fas fa-plus"></i> Agregar</a>
+                <a href="{% url 'registrar_venta' %}" type="button" class="btn btn-primary mb-1"><i
+                        class="fas fa-plus"></i> Registrar</a>
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                     <tr>
-                        <th>ID Certificado del usuario</th>
-                        <th>Nombre de la Pieza</th>
-                        <th>Nro. de reporte</th>
-
+                        <th>Nro.</th>
+                        <th>Productos</th>
+                        <th>Usuario</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
-                        <th>ID Certificado del usuario</th>
-                        <th>Nombre de la Pieza</th>
-                        <th>Nro. de reporte</th>
-
+                        <th>Nro.</th>
+                        <th>Productos</th>
+                        <th>Usuario</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                     </tfoot>
                     <tbody>
-                    {% for certificado in certificados %}
+                    {% for operacion in operaciones %}
                         <tr>
-                            <td>{{ certificado.id_certificado_user }}</td>
-                            <td>{{ certificado.pieza }}</td>
-                            <td>{{ certificado.numero_reporte }}</td>
+
+                            <td>{{ operacion.id }}</td>
+                            <td>
+                                {% if operacion.productos %}
+                                    {% for op in operacion.pedidos %}
+                                        {{ op.producto.nombre_producto }},<br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td width="25%">{{ operacion.user.username }}</td>
+                            <td>{{ operacion.tipo_pago }}</td>
+                            <td>{{ operacion.fecha_operacion|date }}</td>
 
                             <td>
-                                <a href="{% url 'certificado_pieza' certificado.id %}" title="Mostrar Certificado GAM de la Pieza"
+                                <a href="" title="Mostrar detalles"
                                    class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{% url 'piezas' %}"
-                                   title="Editar Certificado GAM de la Pieza" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="#" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-trash" title="Eliminar Certificado GAM de la Pieza"></i>
-                                </a>
+
                             </td>
                         </tr>
                     {% endfor %}
 
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar este producto?</h5>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-primary btn-ok">Eliminar</a>
+                </div>
             </div>
         </div>
     </div>
@@ -79,6 +99,11 @@
         $(document).ready(function () {
             $('#dataTable').DataTable(); // ID From dataTable
             $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
         });
     </script>
 

@@ -1,0 +1,144 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Registrar Venta</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">Gestión del sitio</li>
+        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Operaciones</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Registrar Venta</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"></h6>
+
+            </div>
+            <div class="card-body">
+                <form enctype="multipart/form-data" action="" method="post">{% csrf_token %}
+                    {#                    {% for hidden in productoForm.hidden_fields %}#}
+                    {#                        <div class="form-group row">#}
+                    {#                            <label class="col-sm-3 col-form-label"#}
+                    {#                                   for="{{ hidden.name }}">{{ hidden.label }}</label>#}
+                    {#                            <div class="col-sm-9">#}
+                    {#                                <div class="form-group">#}
+                    {#                                    <div class="form-line">#}
+                    {#                                        {{ hidden }}#}
+                    {#                                    </div>#}
+                    {#                                </div>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    {% endfor %}#}
+                    {#                    {% for field in productoForm %}#}
+                    {#                        <div class="form-group row">#}
+                    {#                            <label class="col-sm-3 col-form-label" for="{{ field.name }}">{{ field.label }}</label>#}
+                    {#                            <div class="col-sm-9">#}
+                    {#                                <div class="form-group">#}
+                    {#                                    <div class="form-line">#}
+                    {#                                        {{ field }}#}
+                    {#                                    </div>#}
+                    {#                                </div>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    {% endfor %}#}
+                    <div class="form-group row">
+                        <label for="inputEmail3" class="col-sm-3 col-form-label">Realice los pedidos</label>
+                        <div class="col-sm-6">
+                            <select class="form-control search-label-icon" id="exampleFormControlSelect1">
+                                <option>Brazo gitano</option>
+                                <option>Pastelito</option>
+                                <option>Cake</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="150.50" name="Cantidad">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Tipo de Pago</label>
+                        <div class="col-sm-9">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck2">
+                                <label class="custom-control-label" for="customCheck2">En Efectivo</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck3">
+                                <label class="custom-control-label" for="customCheck3">Por Transferencia</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheckDisabled1" disabled>
+                                <label class="custom-control-label" for="customCheckDisabled1">Por encargo</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheckDisabled1" disabled>
+                                <label class="custom-control-label" for="customCheckDisabled1">Cuenta casa</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!--  Solo para en efectivo, por transferencia o por encargo-->
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Monto Total a pagar</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="150.50" name="monto_total_a_pagar">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Monto Pagado por el Cliente</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="160.50" name="monto_pagado_cliente">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Monto a devolver</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="0.00" name="monto_a_devolver">
+                        </div>
+                    </div>
+                    <!--  Solo para efectivo, transferencia, encargo-->
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Propina del cliente</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="10.00" name="propina_del_cliente">
+                        </div>
+                    </div>
+                    <!-- Si es por Transferencia-->
+                    <div class="form-group row">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label">Número de Transferencia</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="ABC4251FER" name="numero_trasnferencia">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary">Registrar Venta</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+{% endblock %}
