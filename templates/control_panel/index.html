@@ -8,71 +8,75 @@
     </ol>
 {% endblock %}
 {% block content %}
-
-    <div class="col-xl-4 col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Productos</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">25</div>
-                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                        {#                            <span class="text-success mr-2"><i class="fa fa-clipboard"></i> 3.48%</span>#}
-                        {#                            <span>Since last month</span>#}
-                        {#                        </div>#}
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-clipboard fa-2x text-primary"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-4 col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Operaciones realizadas</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
-                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                        {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
-                        {#                            <span>Since last month</span>#}
-                        {#                        </div>#}
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-atlas fa-2x text-primary"></i>
+    {% if request.user.is_administrador or request.user.is_administrador or request.user.is_superuser %}
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Productos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">25</div>
+                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                            {#                            <span class="text-success mr-2"><i class="fa fa-clipboard"></i> 3.48%</span>#}
+                            {#                            <span>Since last month</span>#}
+                            {#                        </div>#}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard fa-2x text-primary"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-4 col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
-                        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
-                        {#                            <span>Since last month</span>#}
-                        {#                        </div>#}
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-primary"></i>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Operaciones realizadas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
+                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                            {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
+                            {#                            <span>Since last month</span>#}
+                            {#                        </div>#}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-atlas fa-2x text-primary"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                            {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+                            {#                            <span>Since last month</span>#}
+                            {#                        </div>#}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <!-- Invoice Example -->
     <div class="col-xl-12 col-lg-12 mb-4">
         <div class="card">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Operaciones realizadas en el día </h6>
-                <a class="m-0 float-right btn btn-primary btn-sm" href="">Realizar Cierre <i
-                        class="fas fa-chevron-right"></i></a>
+                {% if request.user.is_administrador or request.user.is_superuser %}
+                    <a class="m-0 float-right btn btn-primary btn-sm" href="">Realizar Cierre <i
+                            class="fas fa-chevron-right"></i></a>
+                {% endif %}
             </div>
             <div class="table-responsive">
                 <table class="table align-items-center table-flush">
@@ -93,7 +97,7 @@
                         <td>500.00</td>
                         <td>505.00</td>
                         <td>En efectivo</td>
-                        <td><a href=""  class="btn btn-sm btn-primary">Detalles</a></td>
+                        <td><a href="" class="btn btn-sm btn-primary">Detalles</a></td>
                     </tr>
                     {#                    {% for operacion in operaciones_del_dia %}#}
                     {#                        <tr>#}

@@ -1,0 +1,111 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Cuentas Casa</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cuentas Casa</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Tableros de Control</h6>
+                {% if request.user.is_administrador or request.user.is_superuser %}
+                    <a href="{% url 'registrar_venta' %}" type="button" class="btn btn-primary mb-1"><i
+                            class="fas fa-plus"></i> Registrar</a>
+                {% endif %}
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Productos</th>
+                        <th>Usuario</th>
+                        <th>SubTotal</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Productos</th>
+                        <th>Usuario</th>
+                        <th>SubTotal</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for operacion_cc in operaciones_cuentas_casa %}
+                        <tr>
+                            <td>{{ operacion_cc.id }}</td>
+                            <td>
+                                {% if operacion_cc.productos %}
+                                    {% for op in operacion_cc.pedidos %}
+                                        {{ op.producto.nombre_producto }},<br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td width="25%">{{ operacion_cc.user.username }}</td>
+                            <td>{{ operacion_cc.tipo_pago }}</td>
+                            <td>{{ operacion_cc.fecha_operacion|date }}</td>
+
+                            <td>
+                                <a href="" title="Mostrar detalles"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar este producto?</h5>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-primary btn-ok">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
+{% endblock %}

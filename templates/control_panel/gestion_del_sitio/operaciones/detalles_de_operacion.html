@@ -1,12 +1,12 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Certificado GAM de la pieza</h1>
+    <h1 class="h3 mb-0 text-gray-800">Detalles de operación</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">Gestion del Sitio</li>
-        <li class="breadcrumb-item">Servicios</li>
-        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Certificaciones GAM</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Certificaciones GAM de la pieza</li>
+        <li class="breadcrumb-item">Operaciones</li>
+        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Ventas y Cuentas Casa</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detalles de operación</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -14,32 +14,29 @@
     <!-- DataTable with Hover -->
     <div class="col-lg-12">
         <div class="card mb-4">
-            <div class="col-lg-12 col-12" style="margin:1% 1.5% 1.5%  0">
+            <div class="col-lg-12 col-12" style="margin:2% 1.5% 1.5%  0">
                 <div class="row">
-                    <div class="col-lg-6 col-12">
+                    <div class="col-lg-8 col-12">
                         <div class="row" style="margin-top: 13px">
-                            <div class="col-lg-4 ">
-                                <a href="{% url 'index' %}"><img style="height: auto;width: 55%"
-                                                                 src="{% static 'control_panel/img/gam-certificado.png' %}"
-                                                                 alt=""></a>
-                                <br>
-                                <br>
+                            <div class="col-lg-4">
+                                <table class="table align-items-center table-flush" id="track_id">
+                                    <th STYLE="font-size:14px;text-align: center;padding: .25rem;border-top:1px solid #7d7b74;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;"
+                                        colspan="2">ID DE CERTIFICADO
+                                    </th>
+                                    <tr>
+                                        <th style="font-size:15px;text-align: center;border-top:1px solid #7d7b74;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">15
+                                        </th>
+                                </table>
 
                             </div>
 
                             <div class="col-lg-3">
-
-                            </div>
-                            <div class="col-lg-4">
-                                <table class="table align-items-center table-flush" id="track_id">
-                                    <th STYLE="font-size:14px;background-color: #e4c479;text-align: center;padding: .25rem"
-                                        colspan="2">ID DE CERTIFICADO
-                                    </th>
-                                    <tr>
-                                        <th style="font-size:15px;text-align: center">{{ certificado_GAM_pieza.id_certificado_user }}</th>
-                                    </tr>
-                                    {#                                <th style="font-size:15px;text-align: center">156498512132685</th>#}
-                                </table>
 
                             </div>
                         </div>
@@ -49,60 +46,63 @@
                                 <table class="table align-items-center table-flush" id="track_id">
                                     <thead class="table-head">
                                     <tr>
-                                        <th colspan="4" style="background-color: #e4c479;text-align: center;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">
-                                            REPORTE DE
-                                            CALIFICACIÓN
+                                        <th colspan="4" style="text-align: center;padding: .25rem;border-top:1px solid #7d7b74;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            DETALLES DEL PEDIDO
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRODUCTO
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            CANTIDAD
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRECIO
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
                                         <td colspan="2" style="width: 60%;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Nombre
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Cake
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.pieza.nombre_producto }}</td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">1
+                                        </td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">500.00
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2" style="padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Número de reporte GAM
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Subtotal
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.numero_reporte }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" style="padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Forma estilo de corte
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74">500.00 CUP
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.forma_y_estilo_de_corte }}</td>
                                     </tr>
-                                    <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Dimensiones
-                                        </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.dimensiones }}</td>
-                                    </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -114,253 +114,142 @@
                                 <table class="table align-items-center table-flush" id="track_id">
                                     <thead class="table-head">
                                     <tr>
-                                        <th colspan="4" style="background-color: #e4c479;text-align: center;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">
-                                            RESULTADOS DE
-                                            CALIFICACIÓN
+                                        <th colspan="4" style="text-align: center;padding: .25rem;border-top:1px solid #7d7b74;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            DETALLES DEL PEDIDO
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRODUCTO
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            CANTIDAD
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRECIO
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
                                         <td colspan="2" style="width: 60%;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Peso de la Pieza
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Cake
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.peso_pieza }}</td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">1
+                                        </td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">500.00
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Grado de Color
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Subtotal
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.grado_color }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Grado de Claridad
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74">500.00 CUP
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.grado_claridad }}</td>
                                     </tr>
-                                    <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Grado de corte
-                                        </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.grado_corte }}</td>
-                                    </tr>
+
                                     </tbody>
                                 </table>
                             </div>
 
                         </div>
-                        <br>
                         <div class="row">
                             <div class="col-lg-12 col-12 ">
                                 <table class="table align-items-center table-flush" id="track_id">
                                     <thead class="table-head">
                                     <tr>
-                                        <th colspan="4" style="background-color: #e4c479;text-align: center;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">
-                                            INFORMACIÓN ADICIONAL
+                                        <th colspan="4" style="text-align: center;padding: .25rem;border-top:1px solid #7d7b74;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            DETALLES DEL PEDIDO
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRODUCTO
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            CANTIDAD
+                                        </th>
+                                        <th colspan="1" style="text-align: center;padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">
+                                            PRECIO
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
                                         <td colspan="2" style="width: 60%;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Pulido
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Cake
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.pulido }}</td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">1
+                                        </td>
+                                        <td colspan="1" style=";padding: .25rem;
+                                        border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">500.00
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Simetría
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74;">Subtotal
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.simetria }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">Fluorecencia
+                                        <td colspan="2" style="padding: .25rem; border-bottom: 1px solid #7d7b74;
+                                        border-left: 1px solid #7d7b74;
+                                        border-right: 1px solid #7d7b74">500.00 CUP
                                         </td>
-                                        <td colspan="2" style=";padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">{{ certificado_GAM_pieza.fluorecencia }}</td>
                                     </tr>
+
                                     </tbody>
                                 </table>
                             </div>
 
                         </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-lg-12 col-12 ">
-                                <table class="table align-items-center table-flush" id="">
-                                    <thead class="table-head">
-                                    <tr>
-                                        <th colspan="3" style="background-color: #e4c479;text-align: center;padding: .25rem;
-                                        border-bottom: 1px solid #e4c479;
-                                        border-left: 1px solid #e4c479;
-                                        border-right: 1px solid #e4c479;">CORTE
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr
-{#                                            style="border-bottom: 1px solid #e4c479;#}
-{#                                        border-left: 1px solid #e4c479;#}
-{#                                        border-right: 1px solid #e4c479;"#}
-                                    >
-                                        {% for imag in imagenes %}
-                                            <td><img class="w-50 "  src="{{ imag.imagen.url }}"
-                                                     alt="..."></td>
-                                        {% endfor %}
+                        <BR>
 
-
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-                        </div>
                     </div>
-                    <div class="col-lg-6 col-12">
-                        {#                    <img src="{% static 'site/images/gg.jpg' %}" style="height: 100%;width: 100%" alt="GG">#}
-                        {#                        <div class="row" style="margin-top: 13px">#}
-                        {#                            <div class="col-lg-12 col-12 ">#}
-                        {#                                <table class="table align-items-center table-flush" id="track_id">#}
-                        {#                                    <thead class="table-head">#}
-                        {#                                    <tr>#}
-                        {#                                        <th colspan="4" style="background-color: #e4c479;text-align: center;padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">#}
-                        {#                                            INFORMACIÓN C#}
-                        {#                                        </th>#}
-                        {#                                    </tr>#}
-                        {#                                    </thead>#}
-                        {#                                    <tbody>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2" style="width: 60%;padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Pulido</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2"style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Simetría</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Fluorecencia</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    </tbody>#}
-                        {#                                </table>#}
-                        {#                            </div>#}
-                        {##}
-                        {#                        </div>#}
-                        {#                        <br>#}
-                        {#                        <div class="row">#}
-                        {#                            <div class="col-lg-12 col-12 ">#}
-                        {#                                <table class="table align-items-center table-flush" id="track_id">#}
-                        {#                                    <thead class="table-head">#}
-                        {#                                    <tr>#}
-                        {#                                        <th colspan="4" style="background-color: #e4c479;text-align: center;padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">#}
-                        {#                                            INFORMACIÓN D#}
-                        {#                                        </th>#}
-                        {#                                    </tr>#}
-                        {#                                    </thead>#}
-                        {#                                    <tbody>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2" style="width: 60%;padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Pulido</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2"style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Simetría</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    <tr>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">Fluorecencia</td>#}
-                        {#                                        <td colspan="2" style=";padding: .25rem;#}
-                        {#                                        border-bottom: 1px solid #e4c479;#}
-                        {#                                        border-left: 1px solid #e4c479;#}
-                        {#                                        border-right: 1px solid #e4c479;">xxxxxxxxxxxxx</td>#}
-                        {#                                    </tr>#}
-                        {#                                    </tbody>#}
-                        {#                                </table>#}
-                        {#                            </div>#}
-                        {##}
-                        {#                        </div>#}
-                        {#                        <br>#}
+                    <div class="col-lg-4 col-12">
+                        <img src="{% static 'control_panel/img/logo.jpg' %}"
+                             style="margin: 55% 0 0 0 ;height: auto;width: 80%" alt="GG">
+
 
                     </div>
 

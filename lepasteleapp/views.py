@@ -196,6 +196,16 @@ def registrar_venta(request):
                   "control_panel/gestion_del_sitio/operaciones/registrar_operacion.html",
                   context)
 
+
+def detalles_de_operacion(request):
+    # operacion = get_object_or_404(Operacion, id=id_op)
+    context = {
+        # 'operacion': operacion
+    }
+    return render(request,
+                  "control_panel/gestion_del_sitio/operaciones/detalles_de_operacion.html", context)
+
+
 # --------------- Gestion de Usuarios----------------------#
 
 
@@ -232,7 +242,7 @@ def insertar_usuario(request):
                         email=email,
                         password=password1,
                         username=user_name,
-                        is_dependiente = True,
+                        is_dependiente=True,
                         is_moderador=False,
                         is_administrador=False,
                         sexo=genero
