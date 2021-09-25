@@ -59,7 +59,7 @@ class Pedido(models.Model):
 
 
 class Operacion(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
     pedidos = models.ManyToManyField(Pedido)
     tipo_pago = models.CharField(max_length=50, choices=TIPO_PAGO, name='tipo_pago')
     # Solo para efectivo, transferencia, encargo
@@ -67,14 +67,13 @@ class Operacion(models.Model):
     monto_pagado_cliente = models.FloatField(max_length=100)
     monto_a_devolver = models.FloatField(max_length=100)
     # Solo para transferencia
-    numero_de_transferencia = models.CharField(max_length=100,blank=True, name='numero_de_transferencia')
+    numero_de_transferencia = models.CharField(max_length=100, blank=True, name='numero_de_transferencia')
     # Solo para efectivo, transferencia, encargo
-    propina_del_cliente = models.FloatField(max_length=100,blank=True)
+    propina_del_cliente = models.FloatField(max_length=100)
     fecha_operacion = models.DateTimeField(datetime.datetime.now())
 
     def str(self):
         return str(self.pedidos)
-
 
 # def get_image_filename(instance, filename):
 #     nombre_pieza = instance.pieza.nombre_producto
@@ -86,4 +85,3 @@ class Operacion(models.Model):
 #     producto = models.ForeignKey(Producto, default=None, on_delete=models.CASCADE)
 #     imagen = models.ImageField(upload_to=get_image_filename,
 #                                verbose_name='imagen')
-

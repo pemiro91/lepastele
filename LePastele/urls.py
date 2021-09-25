@@ -31,7 +31,13 @@ urlpatterns = [
     #
     # # Crud de Operaciones
     path('panel/operaciones', views.operaciones, name="operaciones"),
-    path('panel/operaciones/registrar_venta', views.registrar_venta, name="registrar_venta"),
+    path('panel/operaciones/punto_venta', views.punto_venta, name="punto_venta"),
+    path('panel/operaciones/add_order/<int:id_p>', views.add_order, name="add_order"),
+    path('panel/operaciones/carrito', views.carrito, name="carrito"),
+    path('panel/operaciones/edit_order/<int:id_o>', views.edit_order, name="edit_order"),
+    path('panel/operaciones/delete_order/<int:id_o>', views.delete_order, name="delete_order"),
+    path('panel/operaciones/pagar', views.sales_order, name="pagar"),
+    path('panel/operaciones/pago_confirmado/<int:id_op>', views.pago_confirmado, name="pago_confirmado"),
     path('panel/operaciones/detalles_de_venta', views.detalles_de_operacion, name="detalles_operacion"),
     #
     # ----------------------Gestion de Usuarios-------------------------

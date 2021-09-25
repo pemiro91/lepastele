@@ -1,0 +1,239 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Carrito</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">Gestión del sitio</li>
+        <li class="breadcrumb-item"><a href="{% url 'punto_venta' %}">Punto de Venta</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Carrito</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h4 class="m-0 font-weight-bold text-primary">Total a pagar: {{ total_pagar }} CUP</h4>
+                <a href="#" type="button" data-toggle="modal"
+                   class="btn btn-primary btn-sm waves-pay"
+                   title="Pagar" data-target="#confirm-pay">
+                    <i class="fas fa-money-check"></i> Pagar</a>
+
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for pedido in pedidos %}
+                        <tr>
+                            <td>{{ pedido.producto.nombre_producto }}</td>
+                            <td class="cabron" width="25%">{{ pedido.cantidad_producto }}</td>
+                            <td>{{ pedido.producto.precio }} CUP</td>
+                            <td>{% widthratio pedido.cantidad_producto 1 pedido.producto.precio %} CUP</td>
+                            <td>
+                                <a href="#" type="button" data-toggle="modal"
+                                   class="btn btn-primary btn-sm waves-black"
+                                   data-id="{{ pedido.id }}" data-count="{{ pedido.cantidad_producto }}"
+                                   data-form="{% url 'edit_order' pedido.id %}"
+                                   title="Editar cantidad" data-target="#confirm-count">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" data-href="{% url 'delete_order' pedido.id %}" data-toggle="modal"
+                                   class="btn btn-primary btn-sm" data-id="{{ pedido.id }}"
+                                   title="Eliminar Pedido" data-target="#confirm-delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar este pedido?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-primary btn-ok">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-count" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modifique la cantidad del producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <h6 id="modal_body"></h6>
+                    <form id="edit_order_form" action="" method="post">{% csrf_token %}
+                      <div class="form-group">
+                        <label for="super_count" class="col-form-label">Cantidad:</label>
+                        <input type="number" name="count_product" class="form-control" id="super_count" required>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button id="saveModalButton" class="btn btn-secondary btn-ok" >Modificar</button>
+                      </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-pay" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="data_pay_form" method="post" action="{% url 'pagar' %}" >{% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Rellene los datos necesario para pagar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <h4 class="font-weight-bold text-primary text-center">Total: {{ total_pagar }} CUP</h4>
+
+
+                          <div class="form-group">
+                            <label for="super_count" class="col-form-label">Tipo de pago:</label>
+                            <select class="form-control" id="typePaysSelector" name="payment_type" aria-label="Default select example" required>
+                              <option selected disabled="disabled">Seleccione un tipo de pago</option>
+                              <option value="cash">Cash</option>
+                              <option value="transfer">Transferencia</option>
+                              <option value="charge">Encargo</option>
+                              <option value="home_account">Cuenta casa</option>
+                            </select>
+                          </div>
+                          <div id="monto_client" style="display:none" class="form-group">
+                            <label for="amount_client" class="col-form-label">Monto pagado por el cliente:</label>
+                            <input type="number" name="amount_client"
+                                   class="form-control" id="amount_client" >
+                          </div>
+                          <div id="transaction" style="display:none" class="form-group">
+                            <label for="transaction_code" class="col-form-label">Código de transacción:</label>
+                            <input type="text" name="transaction_code" class="form-control" id="transaction_code" >
+                          </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary btn-ok" >Pagar</button>
+                      </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
+    <script>
+        $(document).on('click','.waves-black',function(){
+            {#var count = $(this).data('count');#}
+            document.forms["edit_order_form"]['super_count'].value = $(this).data('count');
+        });
+    </script>
+    <script>
+        $(document).on('click','.waves-black',function(){
+            const id = $(this).data('id');
+            $("#edit_order_form").attr("action", "edit_order/" + id);
+        });
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('#typePaysSelector').on('change', function() {
+              if ( this.value === 'cash'){
+                $("#monto_client").show();
+                $("#transaction").hide();
+              }
+              else if ( this.value === 'transfer'){
+                $("#monto_client").hide();
+                $("#transaction").show();
+              }
+              else if ( this.value === 'charge'){
+                $("#monto_client").show();
+                $("#transaction").hide();
+              }
+              else {
+                $("#monto_client").hide();
+                $("#transaction").hide();
+              }
+            });
+        });
+    </script>
+{#    <script>#}
+{#        $(document).on('click','.waves-pay',function(){#}
+{#            $("#data_pay_form").attr("action", "pagar");#}
+{#        });#}
+{#    </script>#}
+{#    <script>#}
+{#        function edValueKeyPress() {#}
+{##}
+{#            var edValue = document.getElementById("amount_client");#}
+{#            var s = Float64Array(edValue.value);#}
+{#            var f = Float64Array({{ total_pagar }})#}
+{##}
+{##}
+{##}
+{#            if (s > f) {#}
+{#                alert("Sorry, you don't have enough points");#}
+{#                return false;#}
+{#            }#}
+{#        }#}
+{#    </script>#}
+
+{% endblock %}

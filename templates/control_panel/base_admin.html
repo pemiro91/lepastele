@@ -15,6 +15,7 @@
     <link href="{% static 'control_panel/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'control_panel/css/ruang-admin.min.css' %}" rel="stylesheet">
     <link href="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+    <link href="{% static 'control_panel/css/payment_style.css' %}" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -68,7 +69,7 @@
             <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Operaciones</h6>
-                    <a class="collapse-item" href="{% url 'operaciones' %}">Ventas y Cuentas Casa</a>
+                    <a class="collapse-item" href="{% url 'punto_venta' %}">Ventas y Cuentas Casa</a>
 {#                    <a class="collapse-item" href="{% url 'operaciones' %}">Ventas</a>#}
                 </div>
             </div>

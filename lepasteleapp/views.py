@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as do_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
+from datetime import datetime, date, timedelta
 
 from lepasteleapp.models import (User, Producto, Pedido, Operacion, Categoria_Producto)
 from django.db import transaction
@@ -144,12 +145,10 @@ def modificar_producto(request, id_p=None):
         if update_form.is_valid():
             edit = update_form.save(commit=False)
             edit.save()
-            messages.success(request, 'Prodcuto modificado correctamente')
+            messages.success(request, 'Producto modificado correctamente')
             return redirect('productos')
         context = {'producto': producto_custom, 'update_form': update_form, }
-        return render(request,
-                      'control_panel/gestion_del_sitio/productos/modificar_productos.html',
-                      context)
+        return render(request, 'control_panel/gestion_del_sitio/productos/modificar_productos.html', context)
     return redirect('login_user')
 
 
@@ -157,7 +156,7 @@ def eliminar_producto(request, id_p):
     if request.user.is_authenticated:
         p = Producto.objects.get(id=id_p)
         p.delete()
-        messages.success(request, 'Prodcuto eliminado satisfactoriamente')
+        messages.success(request, 'Producto eliminado satisfactoriamente')
         return redirect('productos')
     return redirect('login_user')
 
@@ -168,33 +167,133 @@ def eliminar_producto(request, id_p):
 def operaciones(request):
     operaciones = Operacion.objects.all()
     context = {'operaciones': operaciones}
-    return render(request,
-                  "control_panel/gestion_del_sitio/operaciones/operaciones.html", context)
+    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones.html", context)
 
 
-def registrar_venta(request):
-    # if request.user.is_authenticated:
-    #     if request.method == "POST":
-    #         nombre_categoria = request.POST.get('nombre_categoria')
-    #         descripcion_categoria = request.POST.get('descripcion_categoria')
-    #
-    #         c = Categoria_Producto.objects.create(
-    #             nombre_categoria=nombre_categoria,
-    #             descripcion=descripcion_categoria
-    #         )
-    #         c.save()
-    #         messages.success(request, 'La categoría fue registrada satisfactoriamente')
-    #         return redirect('categorias_productos')
-    #
-    #     context = {}
-    #     return render(request,
-    #                   "control_panel/gestion_del_sitio/productos/categorias_productos/insertar_categ_producto.html",
-    #                   context)
-    # return redirect('login_user')
-    context = {}
-    return render(request,
-                  "control_panel/gestion_del_sitio/operaciones/registrar_operacion.html",
-                  context)
+def punto_venta(request):
+    products = Producto.objects.all()
+    pedidos = Pedido.objects.all()
+    context = {'productos': products, 'pedidos': pedidos}
+    return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
+
+
+def carrito(request):
+    pedidos = Pedido.objects.all()
+    total_pagar = 0.0
+    for pedido in pedidos:
+        multi = pedido.cantidad_producto * pedido.producto.precio
+        total_pagar += multi
+    context = {'pedidos': pedidos, 'total_pagar': total_pagar}
+    return render(request, "control_panel/gestion_del_sitio/operaciones/carrito.html", context)
+
+
+def add_order(request, id_p):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            producto_custom = Producto.objects.get(id=id_p)
+            count_product = request.POST.get('count_product')
+            c = Pedido.objects.create(producto=producto_custom, cantidad_producto=int(count_product))
+            c.save()
+            messages.success(request, 'Producto agregado satisfactoriamente')
+            return redirect('punto_venta')
+        context = {}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
+    return redirect('login_user')
+
+
+def edit_order(request, id_o=None):
+    if request.user.is_authenticated:
+        pedido = Pedido.objects.get(id=id_o)
+        if request.method == 'POST':
+            count_product = request.POST.get('count_product')
+
+            Pedido.objects.filter(id=id_o).update(cantidad_producto=count_product)
+
+            messages.success(request, 'La cantidad de ' + pedido.producto.nombre_producto + ' fue modificada '
+                                                                                            'satisfactoriamente')
+            return redirect('carrito')
+        context = {'pedido': pedido}
+        return render(request, 'control_panel/gestion_del_sitio/productos/categorias_productos'
+                               '/modificar_categoria_producto.html', context)
+    return redirect('login_user')
+
+
+def delete_order(request, id_o):
+    if request.user.is_authenticated:
+        pe = Pedido.objects.get(id=id_o)
+        pe.delete()
+        messages.success(request, 'Pedido eliminado satisfactoriamente')
+        return redirect('carrito')
+    return redirect('login_user')
+
+
+def sales_order(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            print("algooooooooo")
+            pedidos = Pedido.objects.all()
+            total_pagar = 0.0
+            for pedido in pedidos:
+                multi = pedido.cantidad_producto * pedido.producto.precio
+                total_pagar += multi
+            payment_type = request.POST.get('payment_type')
+            amount_client = request.POST.get('amount_client')
+            transaction_code = request.POST.get('transaction_code')
+            if payment_type == 'cash' or payment_type == 'charge':
+                value_return = float(amount_client) - total_pagar
+                ope = Operacion.objects.create(
+                    usuario=request.user,
+                    tipo_pago=payment_type,
+                    monto_total_a_pagar=total_pagar,
+                    monto_pagado_cliente=amount_client,
+                    monto_a_devolver=value_return,
+                    fecha_operacion=datetime.now()
+                )
+                for order in pedidos:
+                    ope.pedidos.add(order)
+
+                return redirect(reverse('pago_confirmado', args=(ope.id,)))
+
+            if payment_type == 'transfer':
+                ope = Operacion.objects.create(
+                    usuario=request.user,
+                    tipo_pago=payment_type,
+                    monto_total_a_pagar=total_pagar,
+                    numero_de_transferencia=transaction_code,
+                    fecha_operacion=datetime.now()
+                )
+
+                for order in pedidos:
+                    ope.pedidos.add(order)
+
+                return redirect(reverse('pago_confirmado', args=(ope.id,)))
+
+            if payment_type == 'home_account':
+                ope = Operacion.objects.create(
+                    usuario=request.user,
+                    tipo_pago=payment_type,
+                    monto_total_a_pagar=total_pagar,
+                    fecha_operacion=datetime.now()
+                )
+
+                for order in pedidos:
+                    ope.pedidos.add(order)
+
+                return redirect(reverse('pago_confirmado', args=(ope.id,)))
+
+        context = {}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/carrito.html", context)
+    return redirect('login_user')
+
+
+def pago_confirmado(request, id_op):
+    operation = get_object_or_404(Operacion, id=id_op)
+    orders = Pedido.objects.all()
+    context = {
+        'orders': orders,
+        'operation': operation
+    }
+    return render(request, "control_panel/gestion_del_sitio/operaciones/pago_confirmado.html", context)
 
 
 def detalles_de_operacion(request):
