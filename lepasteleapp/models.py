@@ -58,18 +58,33 @@ class Pedido(models.Model):
         return str(self.producto)
 
 
+class Historial(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, name='producto')
+    cantidad_producto = models.IntegerField()
+
+    def str(self):
+        return str(self.producto)
+
+
+class CerrarOperacion(models.Model):
+    is_closed = models.BooleanField(default=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
+    fecha_cierre = models.DateTimeField(datetime.datetime.now())
+
+
 class Operacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
-    pedidos = models.ManyToManyField(Pedido)
+    pedidos = models.ManyToManyField(Historial)
     tipo_pago = models.CharField(max_length=50, choices=TIPO_PAGO, name='tipo_pago')
     # Solo para efectivo, transferencia, encargo
     monto_total_a_pagar = models.FloatField(max_length=100)
-    monto_pagado_cliente = models.FloatField(max_length=100)
-    monto_a_devolver = models.FloatField(max_length=100)
+    monto_pagado_cliente = models.FloatField(max_length=100, null=True, blank=True)
+    # Solo para efectivo, encargo
+    monto_a_devolver = models.FloatField(max_length=100, null=True, blank=True)
     # Solo para transferencia
-    numero_de_transferencia = models.CharField(max_length=100, blank=True, name='numero_de_transferencia')
+    numero_de_transferencia = models.CharField(max_length=100, null=True, blank=True, name='numero_de_transferencia')
     # Solo para efectivo, transferencia, encargo
-    propina_del_cliente = models.FloatField(max_length=100)
+    propina_del_cliente = models.FloatField(max_length=100, null=True, blank=True)
     fecha_operacion = models.DateTimeField(datetime.datetime.now())
 
     def str(self):

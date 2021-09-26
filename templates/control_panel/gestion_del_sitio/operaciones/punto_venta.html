@@ -18,6 +18,14 @@
                 {% ifnotequal pedidos.count 0 %}
                     <a href="{% url 'carrito' %}" type="button" class="btn btn-primary mb-1">
                     <i class="fas fa-shopping-cart"></i> Ver carrito - {{ pedidos.count }}</a>
+                {% else %}
+                    {% if not cerrarOperation.is_closed %}
+                        <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                           class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                            <i class="fas fa-circle"></i>
+                            Cerrar venta
+                        </a>
+                    {% endif %}
                 {% endifnotequal %}
             </div>
             <div class="table-responsive p-3">
@@ -25,41 +33,46 @@
                     <thead class="thead-light">
                     <tr>
                         <th>Nro.</th>
-                        <th>Nombre</th>
+                        <th>Producto</th>
                         <th>Descripción</th>
                         <th>Categoría</th>
                         <th>Precio</th>
-                        <th>Acciones</th>
+                        {% if not cerrarOperation.is_closed %}
+                            <th>Acciones</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
                         <th>Nro.</th>
-                        <th>Nombre</th>
+                        <th>Producto</th>
                         <th>Descripción</th>
                         <th>Categoría</th>
                         <th>Precio</th>
-                        <th>Acciones</th>
+                        {% if not cerrarOperation.is_closed %}
+                            <th>Acciones</th>
+                        {% endif %}
                     </tr>
                     </tfoot>
                     <tbody>
                     {% for producto in productos %}
                         <tr>
-
                             <td>{{ producto.id }}</td>
                             <td>{{ producto.nombre_producto }}
                             </td>
                             <td width="25%">{{ producto.descripcion }}</td>
                             <td>{{ producto.categoria_producto }}</td>
                             <td>{{ producto.precio }} CUP</td>
-                            <td>
-                                <a href="#" type="button" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
-                                   data-id="{{ producto.id }}" data-url="{% url 'add_order' producto.id %}"
-                                   title="Agregar producto" data-target="#confirm-count">
-                                    <i class="fas fa-plus"></i>
-                                    Agregar
-                                </a>
-                            </td>
+                            {% if not cerrarOperation.is_closed %}
+                                <td>
+                                    <a href="#" type="button" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
+                                       data-id="{{ producto.id }}" data-url="{% url 'add_order' producto.id %}"
+                                       title="Agregar producto" data-target="#confirm-count">
+                                        <i class="fas fa-plus"></i>
+                                        Agregar
+                                    </a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -95,6 +108,22 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea cerrar la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 {% block js %}
     <!-- Page level plugins -->
@@ -114,6 +143,12 @@
             var id = $(this).data('id');
             console.log(id)
             $("#add_order_form").attr("action", "add_order/" + id);
+        });
+    </script>
+
+    <script>
+        $('#confirm-close').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
         });
     </script>
 

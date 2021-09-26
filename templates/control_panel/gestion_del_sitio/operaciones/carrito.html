@@ -117,7 +117,7 @@
     <div class="modal fade" id="confirm-pay" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form id="data_pay_form" method="post" action="{% url 'pagar' %}" >{% csrf_token %}
+
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Rellene los datos necesario para pagar</h5>
@@ -128,36 +128,44 @@
 
                     <div class="modal-body">
                         <h4 class="font-weight-bold text-primary text-center">Total: {{ total_pagar }} CUP</h4>
-
-
+                        <form id="data_pay_form" method="post" action="" class="needs-validation" novalidate>{% csrf_token %}
                           <div class="form-group">
                             <label for="super_count" class="col-form-label">Tipo de pago:</label>
                             <select class="form-control" id="typePaysSelector" name="payment_type" aria-label="Default select example" required>
                               <option selected disabled="disabled">Seleccione un tipo de pago</option>
-                              <option value="cash">Cash</option>
+                              <option value="cash">Efectivo</option>
                               <option value="transfer">Transferencia</option>
                               <option value="charge">Encargo</option>
                               <option value="home_account">Cuenta casa</option>
                             </select>
                           </div>
-                          <div id="monto_client" style="display:none" class="form-group">
+
+                          <div id="monto_client" style="display:none" class="form-group has-error">
                             <label for="amount_client" class="col-form-label">Monto pagado por el cliente:</label>
                             <input type="number" name="amount_client"
-                                   class="form-control" id="amount_client" >
+                                   class="form-control required" id="amount_client"  >
+                            <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                            <div id="shieldAmount" class="invalid-feedback">El monto a pagar por el cliente es menor que el total a pagar.</div>
                           </div>
-                          <div id="transaction" style="display:none" class="form-group">
-                            <label for="transaction_code" class="col-form-label">Código de transacción:</label>
-                            <input type="text" name="transaction_code" class="form-control" id="transaction_code" >
+                          <div id="transaction" style="display:none" class="form-group has-error">
+                              <label for="transaction_code" class="col-form-label">Código de transacción:</label>
+                              <input type="text" name="transaction_code" class="form-control" id="transaction_code" >
+                              <div id="shieldTransRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
                           </div>
 
-
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="button" style="display:none" class="btn btn-primary btn-ok" id="pagar1" name="pagar1"
+                                   value="Pagar" onclick="submitFunction(1)"/>
+                            <input type="button" style="display:none" class="btn btn-primary btn-ok" id="pagar2" name="pagar2"
+                                   value="Pagar" onclick="submitFunction(2)"/>
+                            <input type="button" style="display:none" class="btn btn-primary btn-ok" id="pagar3" name="pagar3"
+                                   value="Guardar" onclick="submitFunction(3)"/>
+                          </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary btn-ok" >Pagar</button>
-                      </div>
                 </div>
-            </form>
+
         </div>
     </div>
 
@@ -187,53 +195,94 @@
             document.forms["edit_order_form"]['super_count'].value = $(this).data('count');
         });
     </script>
+
     <script>
         $(document).on('click','.waves-black',function(){
             const id = $(this).data('id');
             $("#edit_order_form").attr("action", "edit_order/" + id);
         });
     </script>
+
     <script>
         $(document).ready(function(){
             $('#typePaysSelector').on('change', function() {
               if ( this.value === 'cash'){
                 $("#monto_client").show();
                 $("#transaction").hide();
+                $("#pagar1").show();
+                $("#pagar2").hide();
+                $("#pagar3").hide();
               }
               else if ( this.value === 'transfer'){
-                $("#monto_client").hide();
+                $("#monto_client").show();
                 $("#transaction").show();
+                $("#pagar1").hide();
+                $("#pagar2").show();
+                $("#pagar3").hide();
               }
               else if ( this.value === 'charge'){
                 $("#monto_client").show();
                 $("#transaction").hide();
+                $("#pagar1").show();
+                $("#pagar2").hide();
+                $("#pagar3").hide();
               }
               else {
                 $("#monto_client").hide();
                 $("#transaction").hide();
+                $("#pagar1").hide();
+                $("#pagar2").hide();
+                $("#pagar3").show();
               }
             });
         });
     </script>
-{#    <script>#}
-{#        $(document).on('click','.waves-pay',function(){#}
-{#            $("#data_pay_form").attr("action", "pagar");#}
-{#        });#}
-{#    </script>#}
-{#    <script>#}
-{#        function edValueKeyPress() {#}
-{##}
-{#            var edValue = document.getElementById("amount_client");#}
-{#            var s = Float64Array(edValue.value);#}
-{#            var f = Float64Array({{ total_pagar }})#}
-{##}
-{##}
-{##}
-{#            if (s > f) {#}
-{#                alert("Sorry, you don't have enough points");#}
-{#                return false;#}
-{#            }#}
-{#        }#}
-{#    </script>#}
 
+    <script type="text/javascript">
+        function submitFunction(i) {
+           if (i===1){
+               const amountClient = $('#amount_client');
+               const totalPagar = parseFloat("{{ total_pagar }}");
+               if (!amountClient.val()){
+                   $("#shieldRequired").show();
+                   i.preventDefault();
+               }else {
+                   $("#shieldRequired").hide();
+                   if(totalPagar > amountClient.val()) {
+                       $("#shieldAmount").show();
+                       i.preventDefault();
+                   } else {
+                       $("#shieldAmount").hide();
+                       $("#data_pay_form").attr("action", "pagar");
+                   }
+              }
+           }
+           if (i===2){
+               const transactionCode = $('#transaction_code');
+               const amountClient = $('#amount_client');
+               const totalPagar = parseFloat("{{ total_pagar }}");
+               if (!amountClient.val()){
+                   $("#shieldRequired").show();
+                   i.preventDefault();
+               }if (!transactionCode.val()){
+                   $("#shieldTransRequired").show();
+                   i.preventDefault();
+               }else {
+                   $("#shieldRequired").hide();
+                   $("#shieldTransRequired").hide();
+                   if(totalPagar > amountClient.val()) {
+                       $("#shieldAmount").show();
+                       i.preventDefault();
+                   } else {
+                       $("#shieldAmount").hide();
+                       $("#data_pay_form").attr("action", "pagar_transfer");
+                   }
+               }
+           }
+           if (i===3){
+               $("#data_pay_form").attr("action", "pagar");
+           }
+           document.forms["data_pay_form"].submit()
+       }
+    </script>
 {% endblock %}

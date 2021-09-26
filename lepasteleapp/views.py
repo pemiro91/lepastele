@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 from datetime import datetime, date, timedelta
 
-from lepasteleapp.models import (User, Producto, Pedido, Operacion, Categoria_Producto)
+from lepasteleapp.models import (User, Producto, Pedido, Operacion, Categoria_Producto, Historial, CerrarOperacion)
 from django.db import transaction
 from .forms import ProductoForm
 from django.contrib.auth.decorators import login_required
@@ -165,15 +165,37 @@ def eliminar_producto(request, id_p):
 
 
 def operaciones(request):
-    operaciones = Operacion.objects.all()
-    context = {'operaciones': operaciones}
+    operations = Operacion.objects.all()
+    total_dia = 0.0
+    for ope in operations:
+        total_dia += ope.monto_total_a_pagar
+    isClose = CerrarOperacion.objects.all().last()
+    context = {'operaciones': operations, 'total_dia': total_dia, 'cerrarOperation': isClose}
     return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones.html", context)
+
+
+def abrir_venta(request):
+    if request.user.is_authenticated:
+        isClose = CerrarOperacion.objects.all().last()
+        CerrarOperacion.objects.filter(id=isClose.id).update(is_closed=False)
+        messages.success(request, 'Venta abierta satisfactoriamente')
+        return redirect('operaciones')
+    return redirect('login_user')
+
+
+def cerrar_venta(request):
+    if request.user.is_authenticated:
+        CerrarOperacion.objects.create(is_closed=True, usuario=request.user, fecha_cierre=datetime.now())
+        messages.success(request, 'Venta cerrada satisfactoriamente')
+        return redirect('punto_venta')
+    return redirect('login_user')
 
 
 def punto_venta(request):
     products = Producto.objects.all()
     pedidos = Pedido.objects.all()
-    context = {'productos': products, 'pedidos': pedidos}
+    isClose = CerrarOperacion.objects.all().last()
+    context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose}
     return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
 
 
@@ -230,7 +252,6 @@ def delete_order(request, id_o):
 def sales_order(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            print("algooooooooo")
             pedidos = Pedido.objects.all()
             total_pagar = 0.0
             for pedido in pedidos:
@@ -238,7 +259,6 @@ def sales_order(request):
                 total_pagar += multi
             payment_type = request.POST.get('payment_type')
             amount_client = request.POST.get('amount_client')
-            transaction_code = request.POST.get('transaction_code')
             if payment_type == 'cash' or payment_type == 'charge':
                 value_return = float(amount_client) - total_pagar
                 ope = Operacion.objects.create(
@@ -250,21 +270,11 @@ def sales_order(request):
                     fecha_operacion=datetime.now()
                 )
                 for order in pedidos:
-                    ope.pedidos.add(order)
+                    history = Historial.objects.create(producto=order.producto,
+                                                       cantidad_producto=order.cantidad_producto)
+                    ope.pedidos.add(history)
 
-                return redirect(reverse('pago_confirmado', args=(ope.id,)))
-
-            if payment_type == 'transfer':
-                ope = Operacion.objects.create(
-                    usuario=request.user,
-                    tipo_pago=payment_type,
-                    monto_total_a_pagar=total_pagar,
-                    numero_de_transferencia=transaction_code,
-                    fecha_operacion=datetime.now()
-                )
-
-                for order in pedidos:
-                    ope.pedidos.add(order)
+                Pedido.objects.all().delete()
 
                 return redirect(reverse('pago_confirmado', args=(ope.id,)))
 
@@ -277,7 +287,49 @@ def sales_order(request):
                 )
 
                 for order in pedidos:
-                    ope.pedidos.add(order)
+                    history = Historial.objects.create(producto=order.producto,
+                                                       cantidad_producto=order.cantidad_producto)
+                    ope.pedidos.add(history)
+
+                Pedido.objects.all().delete()
+
+                return redirect(reverse('pago_confirmado', args=(ope.id,)))
+
+        context = {}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/carrito.html", context)
+    return redirect('login_user')
+
+
+def sales_order_transfer(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            pedidos = Pedido.objects.all()
+            total_pagar = 0.0
+            for pedido in pedidos:
+                multi = pedido.cantidad_producto * pedido.producto.precio
+                total_pagar += multi
+            payment_type = request.POST.get('payment_type')
+            amount_client = request.POST.get('amount_client')
+            transaction_code = request.POST.get('transaction_code')
+
+            if payment_type == 'transfer':
+                value_return = float(amount_client) - total_pagar
+                ope = Operacion.objects.create(
+                    usuario=request.user,
+                    tipo_pago=payment_type,
+                    monto_total_a_pagar=total_pagar,
+                    monto_pagado_cliente=amount_client,
+                    monto_a_devolver=value_return,
+                    numero_de_transferencia=transaction_code,
+                    fecha_operacion=datetime.now()
+                )
+
+                for order in pedidos:
+                    history = Historial.objects.create(producto=order.producto,
+                                                       cantidad_producto=order.cantidad_producto)
+                    ope.pedidos.add(history)
+
+                Pedido.objects.all().delete()
 
                 return redirect(reverse('pago_confirmado', args=(ope.id,)))
 
@@ -287,11 +339,18 @@ def sales_order(request):
 
 
 def pago_confirmado(request, id_op):
+    user = request.user
     operation = get_object_or_404(Operacion, id=id_op)
     orders = Pedido.objects.all()
+    if request.method == "POST":
+        count_tip = request.POST.get('count_tip')
+        Operacion.objects.filter(id=id_op).update(propina_del_cliente=float(count_tip))
+
+        return redirect(reverse('pago_confirmado', args=(id_op,)))
     context = {
         'orders': orders,
-        'operation': operation
+        'operation': operation,
+        'user': user
     }
     return render(request, "control_panel/gestion_del_sitio/operaciones/pago_confirmado.html", context)
 

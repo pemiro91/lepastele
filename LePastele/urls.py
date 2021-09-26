@@ -37,7 +37,10 @@ urlpatterns = [
     path('panel/operaciones/edit_order/<int:id_o>', views.edit_order, name="edit_order"),
     path('panel/operaciones/delete_order/<int:id_o>', views.delete_order, name="delete_order"),
     path('panel/operaciones/pagar', views.sales_order, name="pagar"),
+    path('panel/operaciones/pagar_transfer', views.sales_order_transfer, name="pagar_transfer"),
     path('panel/operaciones/pago_confirmado/<int:id_op>', views.pago_confirmado, name="pago_confirmado"),
+    path('panel/operaciones/abrir_venta', views.abrir_venta, name="abrir_venta"),
+    path('panel/operaciones/cerrar_venta', views.cerrar_venta, name="cerrar_venta"),
     path('panel/operaciones/detalles_de_venta', views.detalles_de_operacion, name="detalles_operacion"),
     #
     # ----------------------Gestion de Usuarios-------------------------

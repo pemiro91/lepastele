@@ -1,10 +1,10 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Ventas y Cuentas Casa</h1>
+    <h1 class="h3 mb-0 text-gray-800">Historial de ventas</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Ventas y Cuentas Casa</li>
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Gestión del Sitio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Historial de ventas</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -13,18 +13,28 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Tableros de Control</h6>
-                {% if request.user.is_administrador or request.user.is_superuser %}
-                    <a href="{% url 'punto_venta' %}" type="button" class="btn btn-primary mb-1"><i
-                            class="fas fa-plus"></i> Registrar</a>
+                <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_dia }} CUP</h5>
+                {% if cerrarOperation.is_closed %}
+                    <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                       class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                        <i class="fas fa-circle-thin"></i>
+                        Abrir venta
+                    </a>
+                {% else %}
+                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                       class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                        <i class="fas fa-circle"></i>
+                        Cerrar venta
+                    </a>
                 {% endif %}
+
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                     <tr>
                         <th>Nro.</th>
-                        <th>Productos</th>
+                        <th>Monto</th>
                         <th>Usuario</th>
                         <th>Tipo</th>
                         <th>Fecha</th>
@@ -34,7 +44,7 @@
                     <tfoot>
                     <tr>
                         <th>Nro.</th>
-                        <th>Productos</th>
+                        <th>Monto</th>
                         <th>Usuario</th>
                         <th>Tipo</th>
                         <th>Fecha</th>
@@ -44,17 +54,18 @@
                     <tbody>
                     {% for operacion in operaciones %}
                         <tr>
-
                             <td>{{ operacion.id }}</td>
-                            <td>
-                                {% if operacion.productos %}
-                                    {% for op in operacion.pedidos %}
-                                        {{ op.producto.nombre_producto }},<br>
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                            <td width="25%">{{ operacion.user.username }}</td>
-                            <td>{{ operacion.tipo_pago }}</td>
+                            <td>{{ operacion.monto_total_a_pagar }}</td>
+                            <td width="25%">{{ operacion.usuario.first_name }}</td>
+                            {% if operacion.tipo_pago == 'cash' %}
+                                <td>Efectivo</td>
+                            {% elif operacion.tipo_pago == 'transfer' %}
+                                <td>Transferencia</td>
+                            {% elif operacion.tipo_pago == 'charge' %}
+                                <td>Encargo</td>
+                            {% elif operacion.tipo_pago == 'home_account' %}
+                                <td>Cuenta casa</td>
+                            {% endif %}
                             <td>{{ operacion.fecha_operacion|date }}</td>
 
                             <td>
@@ -73,18 +84,30 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="confirm-open" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Desea eliminar este producto?</h5>
-
+                    <h5 class="modal-title" id="exampleModalLabel">Desea abrir la venta?</h5>
                 </div>
-
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <a class="btn btn-primary btn-ok">Eliminar</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea cerrar la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
                 </div>
             </div>
         </div>
@@ -104,7 +127,11 @@
         });
     </script>
     <script>
-        $('#confirm-delete').on('show.bs.modal', function (e) {
+        $('#confirm-open').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+
+        $('#confirm-close').on('show.bs.modal', function (e) {
             $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
         });
     </script>
