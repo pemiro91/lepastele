@@ -1,10 +1,12 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Historial de ventas</h1>
+    <h1 class="h3 mb-0 text-gray-800">Historial de ventas general</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Gestión del Sitio</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Historial de ventas</li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Historial de ventas general</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -13,71 +15,50 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_dia }} CUP</h5>
-                {% if cerrarOperation.is_closed %}
-                    <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
-                       class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
-                        <i class="fas fa-circle-thin"></i>
-                        Abrir venta
-                    </a>
-                {% else %}
-                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                       class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
-                        <i class="fas fa-circle"></i>
-                        Cerrar venta
-                    </a>
-                {% endif %}
+                <div class="col-lg-3">
+                    <h5 class="m-0 font-weight-bold text-primary">Total general: {{ total_venta_general }} CUP</h5><br/>
 
+                </div>
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                     <tr>
                         <th>Nro.</th>
-                        <th>Monto</th>
-                        <th>Usuario</th>
-                        <th>Tipo</th>
+                        <th>Monto Total</th>
+                        <th>Propina Total</th>
+                        <th>Cantidad de ventas</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
-                        <th>Nro.</th>
-                        <th>Monto</th>
-                        <th>Usuario</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
+                        <th></th>
+                        <th>Total: {{ total_venta_general }} CUP</th>
+                        <th>Total: {{ propina_general }} CUP</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     </tfoot>
                     <tbody>
-                    {% for operacion in operaciones %}
+                    {% for operation in operationsGeneral %}
                         <tr>
-                            <td>{{ operacion.id }}</td>
-                            <td>{{ operacion.monto_total_a_pagar }}</td>
-                            <td width="25%">{{ operacion.usuario.first_name }}</td>
-                            {% if operacion.tipo_pago == 'cash' %}
-                                <td>Efectivo</td>
-                            {% elif operacion.tipo_pago == 'transfer' %}
-                                <td>Transferencia</td>
-                            {% elif operacion.tipo_pago == 'charge' %}
-                                <td>Encargo</td>
-                            {% elif operacion.tipo_pago == 'home_account' %}
-                                <td>Cuenta casa</td>
-                            {% endif %}
-                            <td>{{ operacion.fecha_operacion|date }}</td>
-
+                            <td>{{ operation.id }}</td>
+                            <td>{{ operation.monto_total_dia }} CUP</td>
+                            <td>{{ operation.propina_total_dia }} CUP</td>
+                            <td>{{ operation.operaciones.count }}</td>
+                            <td>{{ operation.fecha_operacion|date }}</td>
                             <td>
-                                <a href="" title="Mostrar detalles"
+                                <a href="{% url 'detalles_de_operation_general' operation.id %}" title="Mostrar detalles"
                                    class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye"></i>
+                                    Detalles
                                 </a>
-
                             </td>
                         </tr>
                     {% endfor %}
-
                     </tbody>
                 </table>
             </div>

@@ -7,7 +7,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 from datetime import datetime, date, timedelta
 
-from lepasteleapp.models import (User, Producto, Pedido, Operacion, Categoria_Producto, Historial, CerrarOperacion)
+from lepasteleapp.models import (User, Producto, Pedido, Operacion, FacturaFinal,
+                                 Categoria_Producto, Historial, CerrarOperacion, OperacionGeneral, OperacionDia)
 from django.db import transaction
 from .forms import ProductoForm
 from django.contrib.auth.decorators import login_required
@@ -37,6 +38,16 @@ def login_user(request):
 
 def logout(request):
     do_logout(request)
+    return redirect('login_user')
+
+
+def base_admin(request):
+    if request.user.is_authenticated:
+        user = request.user
+        operaciones_del_dia = Operacion.objects.all()
+        operacionesGeneral = OperacionGeneral.objects.all()
+        context = {'operaciones_del_dia': operaciones_del_dia, 'operaciones_general': operacionesGeneral, 'user': user}
+        return render(request, "control_panel/base_admin.html", context)
     return redirect('login_user')
 
 
@@ -164,14 +175,29 @@ def eliminar_producto(request, id_p):
 # --------------- CRUD Operaciones----------------------#
 
 
-def operaciones(request):
+def operaciones_dia(request):
     operations = Operacion.objects.all()
     total_dia = 0.0
+    propina_dia = 0.0
     for ope in operations:
         total_dia += ope.monto_total_a_pagar
+        propina_dia += ope.propina_del_cliente
     isClose = CerrarOperacion.objects.all().last()
-    context = {'operaciones': operations, 'total_dia': total_dia, 'cerrarOperation': isClose}
-    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones.html", context)
+    context = {'operaciones': operations, 'total_dia': total_dia, 'propina_dia': propina_dia,
+               'cerrarOperation': isClose}
+    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones_dia.html", context)
+
+
+def operaciones_general(request):
+    operationsGeneral = OperacionGeneral.objects.all()
+    total_venta_general = 0.0
+    propina_general = 0.0
+    for operat in operationsGeneral:
+        total_venta_general += operat.monto_total_dia
+        propina_general += operat.propina_total_dia
+    context = {'operationsGeneral': operationsGeneral,
+               'total_venta_general': total_venta_general, 'propina_general': propina_general}
+    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones_general.html", context)
 
 
 def abrir_venta(request):
@@ -186,6 +212,42 @@ def abrir_venta(request):
 def cerrar_venta(request):
     if request.user.is_authenticated:
         CerrarOperacion.objects.create(is_closed=True, usuario=request.user, fecha_cierre=datetime.now())
+        operations_day = Operacion.objects.all()
+
+        for oper in operations_day:
+            print(oper.pedidos.count())
+            oper_day = OperacionDia.objects.create(
+                usuario=oper.usuario,
+                tipo_pago=oper.tipo_pago,
+                monto_total_a_pagar=oper.monto_total_a_pagar,
+                monto_pagado_cliente=oper.monto_pagado_cliente,
+                monto_a_devolver=oper.monto_a_devolver,
+                numero_de_transferencia=oper.numero_de_transferencia,
+                propina_del_cliente=oper.propina_del_cliente,
+                fecha_operacion=oper.fecha_operacion
+            )
+            for itemOpero in oper.pedidos.all():
+                factura = FacturaFinal.objects.create(producto=itemOpero.producto,
+                                                      cantidad_producto=itemOpero.cantidad_producto)
+                oper_day.facturas.add(factura)
+        total_dia = 0.0
+        total_propina = 0.0
+        for ope in operations_day:
+            total_dia += ope.monto_total_a_pagar
+            total_propina += ope.propina_del_cliente
+
+        operation_general = OperacionGeneral.objects.create(
+            usuario=request.user,
+            monto_total_dia=total_dia,
+            propina_total_dia=total_propina,
+            fecha_operacion=datetime.now()
+        )
+        listOperationsDia = OperacionDia.objects.all()
+        for operationDay in listOperationsDia:
+            operation_general.operaciones.add(operationDay)
+
+        operations_day.delete()
+
         messages.success(request, 'Venta cerrada satisfactoriamente')
         return redirect('punto_venta')
     return redirect('login_user')
@@ -194,8 +256,9 @@ def cerrar_venta(request):
 def punto_venta(request):
     products = Producto.objects.all()
     pedidos = Pedido.objects.all()
+    history = Historial.objects.all()
     isClose = CerrarOperacion.objects.all().last()
-    context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose}
+    context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose, 'history': history}
     return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
 
 
@@ -216,7 +279,7 @@ def add_order(request, id_p):
             count_product = request.POST.get('count_product')
             c = Pedido.objects.create(producto=producto_custom, cantidad_producto=int(count_product))
             c.save()
-            messages.success(request, 'Producto agregado satisfactoriamente')
+            messages.success(request, 'Producto agregado al carrito')
             return redirect('punto_venta')
         context = {}
         return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
@@ -344,8 +407,11 @@ def pago_confirmado(request, id_op):
     orders = Pedido.objects.all()
     if request.method == "POST":
         count_tip = request.POST.get('count_tip')
-        Operacion.objects.filter(id=id_op).update(propina_del_cliente=float(count_tip))
-
+        if count_tip is None or count_tip == '':
+            Operacion.objects.filter(id=id_op).update(propina_del_cliente=0.0)
+        else:
+            Operacion.objects.filter(id=id_op).update(propina_del_cliente=float(count_tip))
+        messages.success(request, 'Propina registrada satisfactoriamente')
         return redirect(reverse('pago_confirmado', args=(id_op,)))
     context = {
         'orders': orders,
@@ -355,13 +421,29 @@ def pago_confirmado(request, id_op):
     return render(request, "control_panel/gestion_del_sitio/operaciones/pago_confirmado.html", context)
 
 
-def detalles_de_operacion(request):
-    # operacion = get_object_or_404(Operacion, id=id_op)
+def detalles_de_operation(request, id_op):
+    operation = get_object_or_404(Operacion, id=id_op)
     context = {
-        # 'operacion': operacion
+        'operation': operation
     }
-    return render(request,
-                  "control_panel/gestion_del_sitio/operaciones/detalles_de_operacion.html", context)
+    return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_de_operacion.html", context)
+
+
+def detalles_de_operation_general(request, id_op):
+    operation = get_object_or_404(OperacionGeneral, id=id_op)
+    context = {
+        'operation': operation
+    }
+    return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
+
+
+def factura_general(request, id_op):
+    operation = get_object_or_404(OperacionDia, id=id_op)
+    print(operation.pedidos.count())
+    context = {
+        'operation': operation
+    }
+    return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_factura.html", context)
 
 
 # --------------- Gestion de Usuarios----------------------#
@@ -387,14 +469,14 @@ def insertar_usuario(request):
 
             if User.objects.filter(username=user_name).exists():
                 messages.warning(request, 'El nombre de usuario ya existe, por favor defina otronombre de usuario')
-                return redirect('insertar_usuarios')
+                return redirect('insertar_usuario')
             elif password1 != password2:
                 messages.warning(request,
                                  'Las contraseñas no coinciden, por favor escriba correctamente la contraseña')
-                return redirect('insertar_usuarios')
+                return redirect('insertar_usuario')
             else:
                 if rol_de == 'dependiente':
-                    user = User.objects.create_user(
+                    User.objects.create_user(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
@@ -405,11 +487,8 @@ def insertar_usuario(request):
                         is_administrador=False,
                         sexo=genero
                     )
-                    user.save()
-                    # messages.success(request, 'Usuario registrado satisfactoriamente')
-                    # return redirect('usuarios')
                 elif rol_de == 'moderador':
-                    user = User.objects.create_user(
+                    User.objects.create_user(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
@@ -420,10 +499,8 @@ def insertar_usuario(request):
                         is_administrador=False,
                         sexo=genero
                     )
-                    user.save()
-
                 else:
-                    user = User.objects.create_user(
+                    User.objects.create_user(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
@@ -434,16 +511,6 @@ def insertar_usuario(request):
                         is_administrador=True,
                         sexo=genero
                     )
-                    user.save()
-                    # messages.success(request, 'Usuario registrado satisfactoriamente')
-                    # return redirect('usuarios')
-
-            # Agregando el mensaje de notificacion en la base de datos
-            # mensaje_notificacion = 'El usuario: ' + user.username + ' se agregó correctamente'
-            # if mensaje_notificacion != '':
-            #     notificacion = Notification(mensaje=mensaje_notificacion, usuario=request.user,
-            #                                 estado='No-Leido', tipo='Usuario')
-            #     notificacion.save()
             messages.success(request, 'Usuario registrado satisfactoriamente')
             return redirect('usuarios')
         context = {}
@@ -454,8 +521,6 @@ def insertar_usuario(request):
 def editar_usuario(request, id_user=None):
     if request.user.is_authenticated:
         user_custom = User.objects.get(id=id_user)
-        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-        # cant_notificaciones = len(notificaciones)
         if request.method == 'POST':
             first_name = request.POST.get('first_name')
             last_name = request.POST.get('last_name')
@@ -467,12 +532,24 @@ def editar_usuario(request, id_user=None):
             with transaction.atomic():
                 user_custom.set_password(password1)
                 user_custom.save()
-                if rol_de == 'moderador':
+                if rol_de == 'dependiente':
                     User.objects.filter(id=id_user).update(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
                         username=user_name,
+                        is_dependiente=True,
+                        is_moderador=False,
+                        is_administrador=False,
+                        sexo=genero
+                    )
+                elif rol_de == 'moderador':
+                    User.objects.filter(id=id_user).update(
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        username=user_name,
+                        is_dependiente=False,
                         is_moderador=True,
                         is_administrador=False,
                         sexo=genero
@@ -483,6 +560,7 @@ def editar_usuario(request, id_user=None):
                         last_name=last_name,
                         email=email,
                         username=user_name,
+                        is_dependiente=False,
                         is_moderador=False,
                         is_administrador=True,
                         sexo=genero

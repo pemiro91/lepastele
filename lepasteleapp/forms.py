@@ -28,8 +28,8 @@ class ProductoForm(forms.ModelForm):
             'categoria_producto': forms.Select(attrs={'class': 'select form-control', 'label': 'Seleccione '
                                                                                                'la '
                                                                                                'categoría', }),
-            'precio': forms.TextInput(
-                attrs={'class': 'form-control number ', 'placeholder': 'Escriba el precio de la pieza', })
+            'precio': forms.NumberInput(
+                attrs={'class': 'form-control ', 'placeholder': 'Escriba el precio de la pieza', })
 
         }
 

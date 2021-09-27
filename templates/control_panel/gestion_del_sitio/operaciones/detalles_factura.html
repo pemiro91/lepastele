@@ -1,0 +1,222 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Detalles de venta</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Historial</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detalles de venta</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="container mt-5 mb-5">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="text-left logo p-2 px-5"></div>
+                            <div class="invoice p-5">
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                        <h5><strong>Detalles de venta</strong></h5>
+                                        <span class="font-weight-bold d-block mt-4">Realizada por: {{ user.first_name }}</span>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <img style="width: 100%;" src="{% static 'control_panel/img/logo.jpg' %}" alt="logo">
+                                    </div>
+                                </div>
+
+
+                                <div class="payment border-top mt-3 mb-3 border-bottom table-responsive">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight-bold d-block text-muted">Fecha</span>
+                                                    <span>{{ operation.fecha_operacion|date }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight-bold d-block text-muted">No. perdido</span>
+                                                    <span>{{ operation.id }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight-bold d-block text-muted">Tipo de pago</span>
+                                                    {% if  operation.tipo_pago == 'cash' %}
+                                                        <span>Efectivo</span>
+                                                    {% elif operation.tipo_pago == 'transfer' %}
+                                                        <span>Transferencia</span>
+                                                    {% elif operation.tipo_pago == 'charge' %}
+                                                        <span>Encargo</span>
+                                                    {% elif operation.tipo_pago == 'home_account' %}
+                                                        <span>Cuenta casa</span>
+                                                    {% endif %}
+
+                                                </div>
+                                            </td>
+                                            {% if operation.numero_de_transferencia != None %}
+                                                <td>
+                                                    <div class="py-2">
+                                                        <span class="font-weight-bold d-block text-muted">No. de transacción</span>
+                                                        <span>{{ operation.numero_de_transferencia }}</span></div>
+                                                </td>
+                                            {% endif %}
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="product border-bottom table-responsive">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                        {% for order in operation.pedidos.all %}
+                                            <tr>
+                                                <td width="80%">
+                                                    <span class="font-weight-bold">{{ order.producto.nombre_producto }}</span>
+                                                    <div class="product-qty">
+                                                        <span style="font-family: 'Montserrat', sans-serif; color: #2f3037"
+                                                              class="d-block">Cantidad:{{ order.cantidad_producto }}</span>
+                                                        <span style="font-family: 'Montserrat', sans-serif; color: #2f3037">Precio: {{ order.producto.precio }} CUP</span>
+                                                    </div>
+                                                </td>
+                                                <td width="20%">
+                                                    <div class="text-right"> <span class="font-weight-bold">
+                                                                {% widthratio order.cantidad_producto 1 order.producto.precio %} CUP
+                                                            </span></div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row d-flex justify-content-end">
+                                    <div class="col-md-5">
+                                        <table class="table table-borderless">
+                                            <tbody class="totals">
+                                            {% if operation.tipo_pago == 'home_account' %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="text-left"><span class="font-weight-bold">Total</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-right"><span
+                                                                class="font-weight-bold">{{ operation.monto_total_a_pagar }} CUP</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                            {% if operation.tipo_pago != 'home_account' %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="text-left"><span
+                                                                class="text-muted">Total a pagar</span></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-right">
+                                                            <span>{{ operation.monto_total_a_pagar }} CUP</span></div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="text-left"><span class="text-muted">Monto pagado por el cliente</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-right">
+                                                            <span>{{ operation.monto_pagado_cliente }} CUP</span></div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-top
+                                                 {% if operation.propina_del_cliente == None %}
+                                                    border-bottom
+                                                 {% endif %}">
+                                                    <td>
+                                                        <div class="text-left"><span class="font-weight-bold">Monto a devolver</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-right"><span
+                                                                class="font-weight-bold">{{ operation.monto_a_devolver }} CUP</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% if operation.propina_del_cliente != None %}
+                                                    <tr class="border-bottom">
+                                                        <td>
+                                                            <div class="text-left"><span class="font-weight-bold">Propina</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-right"><span
+                                                                    class="font-weight-bold">{{ operation.propina_del_cliente }} CUP</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <p></p>
+                                <p class="font-weight-bold mb-0">¡Eslogan!</p> <span>Le Pastelé</span>
+                            </div>
+                            {#                                <div class="d-flex justify-content-between footer p-3"> <span>Need Help? visit our <a href="#"> help center</a></span> <span>12 June, 2020</span> </div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-propina" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Definir propina</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <h6 id="modal_body"></h6>
+                    <form id="tip_form" action="" method="post">{% csrf_token %}
+                      <div class="form-group">
+                        <label for="super_tip" class="col-form-label">Cantidad:</label>
+                        <input type="number" name="count_tip" class="form-control" id="super_tip" required>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button id="saveModalButton" class="btn btn-secondary btn-ok">Guardar</button>
+                      </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+{% endblock %}

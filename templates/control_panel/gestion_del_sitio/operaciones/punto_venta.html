@@ -3,8 +3,9 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Punto de Venta</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">Gestión del sitio</li>
-        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Operaciones</a></li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
         <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
     </ol>
 {% endblock %}
@@ -19,13 +20,16 @@
                     <a href="{% url 'carrito' %}" type="button" class="btn btn-primary mb-1">
                     <i class="fas fa-shopping-cart"></i> Ver carrito - {{ pedidos.count }}</a>
                 {% else %}
-                    {% if not cerrarOperation.is_closed %}
-                        <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                           class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
-                            <i class="fas fa-circle"></i>
-                            Cerrar venta
-                        </a>
+                    {% if history.count != 0 %}
+                        {% if not cerrarOperation.is_closed %}
+                            <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                               class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                                <i class="fas fa-circle"></i>
+                                Cerrar venta
+                            </a>
+                        {% endif %}
                     {% endif %}
+
                 {% endifnotequal %}
             </div>
             <div class="table-responsive p-3">

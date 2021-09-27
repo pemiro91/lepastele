@@ -3,7 +3,9 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Usuarios</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="">Gestión de usuarios</a></li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
         <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
     </ol>
 {% endblock %}
@@ -43,7 +45,9 @@
                             <tr>
                                 <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
                                 <td>{{ usuario.username }}</td>
-                                {% if usuario.is_moderador %}
+                                {% if usuario.is_dependiente %}
+                                    <td>Dependiente</td>
+                                {% elif usuario.is_moderador %}
                                     <td>Moderador</td>
                                 {% else %}
                                     <td>Administrador</td>

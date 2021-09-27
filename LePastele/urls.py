@@ -30,7 +30,8 @@ urlpatterns = [
          name="eliminar_producto"),
     #
     # # Crud de Operaciones
-    path('panel/operaciones', views.operaciones, name="operaciones"),
+    path('panel/operaciones', views.operaciones_dia, name="operaciones"),
+    path('panel/operaciones_general', views.operaciones_general, name="operaciones_general"),
     path('panel/operaciones/punto_venta', views.punto_venta, name="punto_venta"),
     path('panel/operaciones/add_order/<int:id_p>', views.add_order, name="add_order"),
     path('panel/operaciones/carrito', views.carrito, name="carrito"),
@@ -41,7 +42,10 @@ urlpatterns = [
     path('panel/operaciones/pago_confirmado/<int:id_op>', views.pago_confirmado, name="pago_confirmado"),
     path('panel/operaciones/abrir_venta', views.abrir_venta, name="abrir_venta"),
     path('panel/operaciones/cerrar_venta', views.cerrar_venta, name="cerrar_venta"),
-    path('panel/operaciones/detalles_de_venta', views.detalles_de_operacion, name="detalles_operacion"),
+    path('panel/operaciones/detalles_de_venta/<int:id_op>', views.detalles_de_operation, name="detalles_operation"),
+    path('panel/operaciones/detalles_de_operation_general/<int:id_op>',
+         views.detalles_de_operation_general, name="detalles_de_operation_general"),
+    path('panel/operaciones/factura_general/<int:id_op>', views.factura_general, name="factura_general"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios

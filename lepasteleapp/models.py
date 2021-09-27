@@ -23,8 +23,8 @@ def images_directory_path(instance, filename):
 
 class User(AbstractUser):
     sexo = models.BooleanField(default=False)
-    is_dependiente = models.BooleanField(default=True)
-    is_moderador = models.BooleanField(default=True)
+    is_dependiente = models.BooleanField(default=False)
+    is_moderador = models.BooleanField(default=False)
     is_administrador = models.BooleanField(default=False)
 
 
@@ -66,6 +66,14 @@ class Historial(models.Model):
         return str(self.producto)
 
 
+class FacturaFinal(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, name='producto')
+    cantidad_producto = models.IntegerField()
+
+    def str(self):
+        return str(self.producto)
+
+
 class CerrarOperacion(models.Model):
     is_closed = models.BooleanField(default=False)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
@@ -85,6 +93,36 @@ class Operacion(models.Model):
     numero_de_transferencia = models.CharField(max_length=100, null=True, blank=True, name='numero_de_transferencia')
     # Solo para efectivo, transferencia, encargo
     propina_del_cliente = models.FloatField(max_length=100, null=True, blank=True)
+    fecha_operacion = models.DateTimeField(datetime.datetime.now())
+
+    def str(self):
+        return str(self.pedidos)
+
+
+class OperacionDia(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
+    facturas = models.ManyToManyField(FacturaFinal)
+    tipo_pago = models.CharField(max_length=50, choices=TIPO_PAGO, name='tipo_pago')
+    # Solo para efectivo, transferencia, encargo
+    monto_total_a_pagar = models.FloatField(max_length=100)
+    monto_pagado_cliente = models.FloatField(max_length=100, null=True, blank=True)
+    # Solo para efectivo, encargo
+    monto_a_devolver = models.FloatField(max_length=100, null=True, blank=True)
+    # Solo para transferencia
+    numero_de_transferencia = models.CharField(max_length=100, null=True, blank=True, name='numero_de_transferencia')
+    # Solo para efectivo, transferencia, encargo
+    propina_del_cliente = models.FloatField(max_length=100, null=True, blank=True)
+    fecha_operacion = models.DateTimeField(datetime.datetime.now())
+
+    def str(self):
+        return str(self.pedidos)
+
+
+class OperacionGeneral(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
+    operaciones = models.ManyToManyField(OperacionDia)
+    monto_total_dia = models.FloatField(max_length=100)
+    propina_total_dia = models.FloatField(max_length=100, null=True, blank=True)
     fecha_operacion = models.DateTimeField(datetime.datetime.now())
 
     def str(self):

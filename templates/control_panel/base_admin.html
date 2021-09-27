@@ -36,56 +36,62 @@
                 <span>Resumen</span></a>
         </li>
         <hr class="sidebar-divider">
-        {% if request.user.is_moderador or request.user.is_administrador or request.user.is_superuser %}
             <div class="sidebar-heading">
-                Gestión del Sitio
+                Gestión del Negocio
             </div>
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-toggle="collapse" data-target="#collapseBootstrap"
-                   aria-expanded="true" aria-controls="collapseBootstrap">
-                    <i class="far fa-fw fa-clipboard"></i>
-                    <span>Productos</span>
-                </a>
-                <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Productos</h6>
-                        <a class="collapse-item" href="{% url 'categorias_productos' %}">Categorías</a>
-                        <a class="collapse-item" href="{% url 'productos' %}">Productos</a>
+            {% if user.is_moderador or user.is_administrador or user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-toggle="collapse" data-target="#collapseBootstrap"
+                       aria-expanded="true" aria-controls="collapseBootstrap">
+                        <i class="far fa-fw fa-clipboard"></i>
+                        <span>Productos</span>
+                    </a>
+                    <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Productos</h6>
+                            <a class="collapse-item" href="{% url 'categorias_productos' %}">Categorías</a>
+                            <a class="collapse-item" href="{% url 'productos' %}">Productos</a>
+                        </div>
+                    </div>
+                </li>
+            {% endif %}
 
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage"
+                   aria-expanded="true"
+                   aria-controls="collapsePage">
+                    <i class="fas fa-fw fa-atlas"></i>
+                    <span>Operaciones</span>
+                </a>
+                <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Operaciones</h6>
+                        <a class="collapse-item" href="{% url 'punto_venta' %}">Punto de ventas</a>
+                        {% if operaciones_del_dia.count != 0 %}
+                            <a class="collapse-item" href="{% url 'operaciones' %}">Ventas del día</a>
+                        {% endif %}
+                        {% if user.is_administrador or user.is_superuser %}
+                            {% if operaciones_general.count != 0 %}
+                                <a class="collapse-item" href="{% url 'operaciones_general' %}">Ventas generales</a>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </li>
-        {% endif %}
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage"
-               aria-expanded="true"
-               aria-controls="collapsePage">
-                <i class="fas fa-fw fa-atlas"></i>
-                <span>Operaciones</span>
-            </a>
-            <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Operaciones</h6>
-                    <a class="collapse-item" href="{% url 'punto_venta' %}">Ventas y Cuentas Casa</a>
-                    <a class="collapse-item" href="{% url 'operaciones' %}">Historial</a>
+            {% if request.user.is_administrador or request.user.is_superuser %}
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">
+                    Gestión de Usuarios
                 </div>
-            </div>
-        </li>
-
-        {% if request.user.is_administrador or request.user.is_superuser %}
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">
-                Gestión de Usuarios
-            </div>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'usuarios' %}">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Usuarios</span>
-                </a>
-            </li>
-        {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'usuarios' %}">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+            {% endif %}
 
         <hr class="sidebar-divider">
         <div class="version" id="">Versión 1.0</div>
@@ -159,7 +165,7 @@
                 {% if messages %}
                     {% for message in messages %}
                         {% if message.tags == 'error' %}
-                            <div class="alert alert-danger alert-dismissible" role="alert">
+                            <div id="message_container" class="alert alert-danger alert-dismissible" role="alert">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -168,7 +174,7 @@
                                 {{ message }}
                             </div>
                         {% else %}
-                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible"
+                            <div id="message_container2" class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible"
                                  role="alert">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -229,6 +235,17 @@
 <script src="{% static 'control_panel/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'control_panel/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 <script src="{% static 'control_panel/js/ruang-admin.min.js' %}"></script>
+<script>
+    const message_ele = document.getElementById("message_container");
+    const message_ele2 = document.getElementById("message_container2");
+    setTimeout(function(){
+       message_ele.style.display = "none";
+    }, 1000);
+    setTimeout(function(){
+       message_ele2.style.display = "none";
+    }, 1000);
+</script>
+
 {% block js %}
 
 {% endblock %}

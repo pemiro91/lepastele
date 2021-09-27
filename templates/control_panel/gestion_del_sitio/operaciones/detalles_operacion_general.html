@@ -1,0 +1,140 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Detalles de ventas: {{ operation.fecha_operacion|date:'d-m-Y H:i' }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'operaciones_general' %}">Ventas generales</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detalles de ventas</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_dia }} CUP</h5>
+                {% if cerrarOperation.is_closed %}
+                    {% if request.user.is_administrador or request.user.is_superuser %}
+                        <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                            <i class="fas fa-circle-thin"></i>
+                            Abrir venta
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                       class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                        <i class="fas fa-circle"></i>
+                        Cerrar venta
+                    </a>
+                {% endif %}
+
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Monto</th>
+                        <th>Propina</th>
+                        <th>Tipo de Pago</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Total: {{ total_dia }} CUP</th>
+                        <th>Total: {{ propina_dia }} CUP</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for var_operation in operation.operaciones.all %}
+                        <tr>
+                            <td>{{ var_operation.id }}</td>
+                            <td>{{ var_operation.monto_total_a_pagar }} CUP</td>
+                            <td >{{ var_operation.propina_del_cliente }} CUP</td>
+                            {% if var_operation.tipo_pago == 'cash' %}
+                                <td>Efectivo</td>
+                            {% elif var_operation.tipo_pago == 'transfer' %}
+                                <td>Transferencia</td>
+                            {% elif var_operation.tipo_pago == 'charge' %}
+                                <td>Encargo</td>
+                            {% elif var_operation.tipo_pago == 'home_account' %}
+                                <td>Cuenta casa</td>
+                            {% endif %}
+                            <td>{{ var_operation.fecha_operacion|date }}</td>
+                            <td>
+                                <a href="{% url 'factura_general' var_operation.id %}" title="Mostrar detalles"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                    Detalles
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-open" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea abrir la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea cerrar la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+    <script>
+        $('#confirm-open').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+
+        $('#confirm-close').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
+{% endblock %}
