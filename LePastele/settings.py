@@ -117,11 +117,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = 'staticfiles'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')  # Comentar para subir al server
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # Descomentar para subir al server
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static')  # Comentar para subir al server
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -132,3 +134,7 @@ AUTH_USER_MODEL = 'lepasteleapp.User'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_LEVEL = message_constants.DEBUG
+
+TEMPLATE_CONTEXT_PROCESSORS = {
+    'django.core.context_processors.request'
+}
