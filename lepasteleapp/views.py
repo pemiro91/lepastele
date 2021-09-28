@@ -53,8 +53,21 @@ def base_admin(request):
 
 def panel_home(request):
     if request.user.is_authenticated:
-        operaciones_del_dia = Operacion.objects.all()
-        context = {'operaciones_del_dia': operaciones_del_dia}
+        operaciones_generales = OperacionGeneral.objects.all()
+        total_operaciones = 0
+        monto_total = 0.0
+        propina_total = 0.0
+        for opg in operaciones_generales:
+            total_operaciones += opg.operaciones.count()
+            monto_total += opg.monto_total_dia
+            propina_total += opg.propina_total_dia
+        users = User.objects.filter(is_superuser=False).all()
+        products = Producto.objects.all()
+        operacionesDia = Operacion.objects.filter(usuario=request.user).order_by('-id')[:7]
+        isClose = CerrarOperacion.objects.all().last()
+        context = {'products': products, 'total_operaciones': total_operaciones,
+                   'usuarios': users, 'monto_total': monto_total, 'cerrarOperation': isClose,
+                   'propina_total': propina_total, 'operacionesDia': operacionesDia}
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
 
@@ -95,8 +108,6 @@ def agregar_categoria_producto(request):
 def modificar_categoria_producto(request, id_cp=None):
     if request.user.is_authenticated:
         categoria_producto = Categoria_Producto.objects.get(id=id_cp)
-        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-        # cant_notificaciones = len(notificaciones)
         if request.method == 'POST':
             nombre_categoria = request.POST.get('nombre_categoria')
             descripcion_categoria = request.POST.get('descripcion_categoria')
@@ -150,8 +161,6 @@ def agregar_producto(request):
 def modificar_producto(request, id_p=None):
     if request.user.is_authenticated:
         producto_custom = Producto.objects.get(id=id_p)
-        # notificaciones = Notification.objects.all().exclude(usuario=request.user)[:3]
-        # cant_notificaciones = len(notificaciones)
         update_form = ProductoForm(request.POST or None, request.FILES or None, instance=producto_custom)
         if update_form.is_valid():
             edit = update_form.save(commit=False)
@@ -171,7 +180,6 @@ def eliminar_producto(request, id_p):
         return redirect('productos')
     return redirect('login_user')
 
-
 # --------------- CRUD Operaciones----------------------#
 
 
@@ -181,23 +189,64 @@ def operaciones_dia(request):
     propina_dia = 0.0
     for ope in operations:
         total_dia += ope.monto_total_a_pagar
-        propina_dia += ope.propina_del_cliente
+        if ope.propina_del_cliente is None:
+            propina_dia += 0.0
+        else:
+            propina_dia += ope.propina_del_cliente
     isClose = CerrarOperacion.objects.all().last()
     context = {'operaciones': operations, 'total_dia': total_dia, 'propina_dia': propina_dia,
                'cerrarOperation': isClose}
-    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones_dia.html", context)
+    return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_dia.html", context)
+
+
+class Ventas:
+    def __init__(self, id, monto_total_dia, propina_total_dia, cantidadVentas, fecha_operacion):
+        self.id = id
+        self.monto_total_dia = monto_total_dia
+        self.propina_total_dia = propina_total_dia
+        self.cantidadVentas = cantidadVentas
+        self.fecha_operacion = fecha_operacion
 
 
 def operaciones_general(request):
     operationsGeneral = OperacionGeneral.objects.all()
     total_venta_general = 0.0
     propina_general = 0.0
+    listCantidadVentas = []
+    for o in operationsGeneral:
+        cantidadVentas = OperacionDia.objects.filter(fecha_operacion__year=o.fecha_operacion.year,
+                                                     fecha_operacion__month=o.fecha_operacion.month,
+                                                     fecha_operacion__day=o.fecha_operacion.day
+                                                     ).count()
+        obVenta = Ventas(o.id, o.monto_total_dia, o.propina_total_dia, cantidadVentas, o.fecha_operacion)
+        listCantidadVentas.append(obVenta)
     for operat in operationsGeneral:
         total_venta_general += operat.monto_total_dia
-        propina_general += operat.propina_total_dia
-    context = {'operationsGeneral': operationsGeneral,
+        if operat.propina_total_dia is None:
+            propina_general += 0.0
+        else:
+            propina_general += operat.propina_total_dia
+    context = {'operationsGeneral': listCantidadVentas,
                'total_venta_general': total_venta_general, 'propina_general': propina_general}
-    return render(request, "control_panel/gestion_del_sitio/operaciones/operaciones_general.html", context)
+    return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_general.html", context)
+
+
+def detalles_de_operation_general(request, id_op):
+    operation = get_object_or_404(OperacionGeneral, id=id_op)
+    total_venta_general = operation.monto_total_dia
+    propina_general = operation.propina_total_dia
+
+    totalVentas = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                              fecha_operacion__month=operation.fecha_operacion.month,
+                                              fecha_operacion__day=operation.fecha_operacion.day)
+
+    context = {
+        'operation': operation,
+        'total_venta_general': total_venta_general,
+        'propina_general': propina_general,
+        'totalVentas': totalVentas
+    }
+    return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
 
 
 def abrir_venta(request):
@@ -205,7 +254,7 @@ def abrir_venta(request):
         isClose = CerrarOperacion.objects.all().last()
         CerrarOperacion.objects.filter(id=isClose.id).update(is_closed=False)
         messages.success(request, 'Venta abierta satisfactoriamente')
-        return redirect('operaciones')
+        return redirect('punto_venta')
     return redirect('login_user')
 
 
@@ -215,7 +264,6 @@ def cerrar_venta(request):
         operations_day = Operacion.objects.all()
 
         for oper in operations_day:
-            print(oper.pedidos.count())
             oper_day = OperacionDia.objects.create(
                 usuario=oper.usuario,
                 tipo_pago=oper.tipo_pago,
@@ -234,7 +282,10 @@ def cerrar_venta(request):
         total_propina = 0.0
         for ope in operations_day:
             total_dia += ope.monto_total_a_pagar
-            total_propina += ope.propina_del_cliente
+            if ope.propina_del_cliente is None:
+                total_propina += 0.0
+            else:
+                total_propina += ope.propina_del_cliente
 
         operation_general = OperacionGeneral.objects.create(
             usuario=request.user,
@@ -407,12 +458,10 @@ def pago_confirmado(request, id_op):
     orders = Pedido.objects.all()
     if request.method == "POST":
         count_tip = request.POST.get('count_tip')
-        if count_tip is None or count_tip == '':
-            Operacion.objects.filter(id=id_op).update(propina_del_cliente=0.0)
-        else:
-            Operacion.objects.filter(id=id_op).update(propina_del_cliente=float(count_tip))
+        Operacion.objects.filter(id=id_op).update(propina_del_cliente=float(count_tip))
         messages.success(request, 'Propina registrada satisfactoriamente')
         return redirect(reverse('pago_confirmado', args=(id_op,)))
+
     context = {
         'orders': orders,
         'operation': operation,
@@ -429,21 +478,20 @@ def detalles_de_operation(request, id_op):
     return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_de_operacion.html", context)
 
 
-def detalles_de_operation_general(request, id_op):
-    operation = get_object_or_404(OperacionGeneral, id=id_op)
-    context = {
-        'operation': operation
-    }
-    return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
-
-
-def factura_general(request, id_op):
+def factura_general(request, id_opg, id_op):
+    operationGeneral = get_object_or_404(OperacionGeneral, id=id_opg)
     operation = get_object_or_404(OperacionDia, id=id_op)
-    print(operation.pedidos.count())
     context = {
+        'operationGeneral': operationGeneral,
         'operation': operation
     }
     return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_factura.html", context)
+
+
+def factura_resumen(request, id_op):
+    operation = get_object_or_404(Operacion, id=id_op)
+    context = {'operation': operation}
+    return render(request, "control_panel/gestion_del_sitio/operaciones/resumen_venta.html", context)
 
 
 # --------------- Gestion de Usuarios----------------------#

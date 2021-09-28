@@ -1,12 +1,12 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Historial de ventas general</h1>
+    <h1 class="h3 mb-0 text-gray-800">Historial de ventas en el día</h1>
     <ol class="breadcrumb">
         {% if request.user.is_administrador or request.user.is_superuser %}
             <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         {% endif %}
-        <li class="breadcrumb-item active" aria-current="page">Historial de ventas general</li>
+        <li class="breadcrumb-item active" aria-current="page">Historial de ventas en el día</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -15,19 +15,31 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <div class="col-lg-3">
-                    <h5 class="m-0 font-weight-bold text-primary">Total general: {{ total_venta_general }} CUP</h5><br/>
+                <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_dia }} CUP</h5>
+                {% if cerrarOperation.is_closed %}
+                    {% if request.user.is_administrador or request.user.is_superuser %}
+                        <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                            <i class="fas fa-circle-thin"></i>
+                            Abrir venta
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                       class="m-0 float-right btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                        Realizar Cierre  <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
 
-                </div>
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                     <tr>
                         <th>Nro.</th>
-                        <th>Monto Total</th>
-                        <th>Propina Total</th>
-                        <th>Cantidad de ventas</th>
+                        <th>Monto</th>
+                        <th>Propina</th>
+                        <th>Tipo de Pago</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
@@ -35,23 +47,35 @@
                     <tfoot>
                     <tr>
                         <th></th>
-                        <th>Total: {{ total_venta_general }} CUP</th>
-                        <th>Total: {{ propina_general }} CUP</th>
+                        <th>Total: {{ total_dia }} CUP</th>
+                        <th>Total: {{ propina_dia }} CUP</th>
                         <th></th>
                         <th></th>
                         <th></th>
                     </tr>
                     </tfoot>
                     <tbody>
-                    {% for operation in operationsGeneral %}
+                    {% for operation in operaciones %}
                         <tr>
                             <td>{{ operation.id }}</td>
-                            <td>{{ operation.monto_total_dia }} CUP</td>
-                            <td>{{ operation.propina_total_dia }} CUP</td>
-                            <td>{{ operation.operaciones.count }}</td>
-                            <td>{{ operation.fecha_operacion|date }}</td>
+                            <td>{{ operation.monto_total_a_pagar }} CUP</td>
+                            {% if operation.propina_del_cliente is None %}
+                                <td >0.0 CUP</td>
+                            {% else %}
+                                <td >{{ operation.propina_del_cliente }} CUP</td>
+                            {% endif %}
+                            {% if operation.tipo_pago == 'cash' %}
+                                <td>Efectivo</td>
+                            {% elif operation.tipo_pago == 'transfer' %}
+                                <td>Transferencia</td>
+                            {% elif operation.tipo_pago == 'charge' %}
+                                <td>Encargo</td>
+                            {% elif operation.tipo_pago == 'home_account' %}
+                                <td>Cuenta casa</td>
+                            {% endif %}
+                            <td>{{ operation.fecha_operacion|time:'g:iA'|lower }}</td>
                             <td>
-                                <a href="{% url 'detalles_de_operation_general' operation.id %}" title="Mostrar detalles"
+                                <a href="{% url 'detalles_operation' operation.id %}" title="Mostrar detalles"
                                    class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye"></i>
                                     Detalles

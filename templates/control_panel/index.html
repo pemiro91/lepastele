@@ -3,123 +3,186 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Resumen</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Inicio</a></li>
         <li class="breadcrumb-item active" aria-current="page">Resumen</li>
     </ol>
 {% endblock %}
 {% block content %}
-    {% if request.user.is_administrador or request.user.is_administrador or request.user.is_superuser %}
+    {% if request.user.is_administrador or request.user.is_superuser %}
         <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Productos</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">25</div>
-                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                            {#                            <span class="text-success mr-2"><i class="fa fa-clipboard"></i> 3.48%</span>#}
-                            {#                            <span>Since last month</span>#}
-                            {#                        </div>#}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard fa-2x text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Operaciones realizadas
+            <a href="{% url 'productos' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Productos</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ products.count }}</div>
+                                {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                                {#                            <span class="text-success mr-2"><i class="fa fa-clipboard"></i> 3.48%</span>#}
+                                {#                            <span>Since last month</span>#}
+                                {#                        </div>#}
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
-                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                            {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
-                            {#                            <span>Since last month</span>#}
-                            {#                        </div>#}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-atlas fa-2x text-primary"></i>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard fa-2x text-primary"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+            <a href="{% url 'operaciones_general' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Ventas realizadas
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_operaciones }}</div>
+                                {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                                {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
+                                {#                            <span>Since last month</span>#}
+                                {#                        </div>#}
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-atlas fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <a href="{% url 'usuarios' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ usuarios.count }}</div>
+        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+        {#                            <span>Since last month</span>#}
+        {#                        </div>#}
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+{#        <div class="col-xl-4 col-md-6 mb-4">#}
+{#            <div class="card h-100">#}
+{#                <div class="card-body">#}
+{#                    <div class="row align-items-center">#}
+{#                        <div class="col mr-2">#}
+{#                            <div class="text-xs font-weight-bold text-uppercase mb-1">Monto Total</div>#}
+{#                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ monto_total }} CUP</div>#}
                             {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
                             {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
                             {#                            <span>Since last month</span>#}
                             {#                        </div>#}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{#                        </div>#}
+{#                        <div class="col-auto">#}
+{#                            <i class="fas fa-money-bill-wave-alt fa-2x text-primary"></i>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-xl-4 col-md-6 mb-4">#}
+{#            <div class="card h-100">#}
+{#                <div class="card-body">#}
+{#                    <div class="row align-items-center">#}
+{#                        <div class="col mr-2">#}
+{#                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total propina</div>#}
+{#                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ propina_total }} CUP</div>#}
+                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+                            {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+                            {#                            <span>Since last month</span>#}
+                            {#                        </div>#}
+{#                        </div>#}
+{#                        <div class="col-auto">#}
+{#                            <i class="fas fa-money-bill-wave fa-2x text-primary"></i>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
     {% endif %}
     <!-- Invoice Example -->
     <div class="col-xl-12 col-lg-12 mb-4">
         <div class="card">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Operaciones realizadas en el día </h6>
-                {% if request.user.is_administrador or request.user.is_superuser %}
-                    <a class="m-0 float-right btn btn-primary btn-sm" href="">Realizar Cierre <i
-                            class="fas fa-chevron-right"></i></a>
+                <h6 class="m-0 font-weight-bold text-primary">Últimas 7 ventas realizadas en el día </h6>
+                {% if cerrarOperation.is_closed %}
+                    {% if request.user.is_administrador or request.user.is_superuser %}
+                        <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                            <i class="fas fa-circle-thin"></i>
+                            Abrir venta
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                       class="m-0 float-right btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
+                        Realizar Cierre  <i class="fas fa-chevron-right"></i>
+                    </a>
                 {% endif %}
             </div>
-            <div class="table-responsive">
-                <table class="table align-items-center table-flush">
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                     <tr>
-                        <th>Nro.</th>
-                        <th>Productos</th>
-                        <th>Monto Total a pagar</th>
-                        <th>Monto Pagado</th>
+                        <th>Cant.Productos</th>
+                        <th>Total a pagar</th>
+                        <th>Pagado por cliente</th>
+                        <th>Monto a devolver</th>
                         <th>Tipo de Pago</th>
+                        <th>Hora</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tfoot>
                     <tr>
-                        <td>1</td>
-                        <td>Cake de Chocolate</td>
-                        <td>500.00</td>
-                        <td>505.00</td>
-                        <td>En efectivo</td>
-                        <td><a href="" class="btn btn-sm btn-primary">Detalles</a></td>
+                        <th>Cant.Productos</th>
+                        <th>Total a pagar</th>
+                        <th>Pagado por cliente</th>
+                        <th>Monto a devolver</th>
+                        <th>Tipo de Pago</th>
+                        <th>Hora</th>
+                        <th>Acciones</th>
                     </tr>
-                    {#                    {% for operacion in operaciones_del_dia %}#}
-                    {#                        <tr>#}
-                    {##}
-                    {#                            <td>{{ operacion.id }}</td>#}
-                    {#                            <td>#}
-                    {#                                {% if operacion.productos %}#}
-                    {#                                    {% for op in operacion.pedidos %}#}
-                    {#                                        {{ op}},<br>#}
-                    {#                                    {% endfor %}#}
-                    {#                                {% endif %}#}
-                    {#                            </td>#}
-                    {#                            <td width="25%">{{ operacion.user }}</td>#}
-                    {#                            <td>{{ operacion.tipo_pago }}</td>#}
-                    {#                            <td>22 de Septiembre de 2021</td>#}
-                    {##}
-                    {#                            <td><a href=""#}
-                    {#                                   class="btn btn-sm btn-primary">Detalles</a></td>#}
-                    {##}
-                    {##}
-                    {#                        </tr>#}
-                    {#                    {% endfor %}#}
+                    </tfoot>
+                    <tbody>
+                        {% for operacion in operacionesDia %}
+                            <tr>
+                                <td>{{ operacion.pedidos.count }}</td>
+                                <td>{{ operacion.monto_total_a_pagar }} CUP</td>
+                                <td>{{ operacion.monto_pagado_cliente }} CUP</td>
+                                <td>{{ operacion.monto_a_devolver }} CUP</td>
+                                {% if operacion.tipo_pago == 'cash' %}
+                                    <td>Efectivo</td>
+                                {% elif operacion.tipo_pago == 'transfer' %}
+                                    <td>Transferencia</td>
+                                {% elif operacion.tipo_pago == 'charge' %}
+                                    <td>Encargo</td>
+                                {% elif operacion.tipo_pago == 'home_account' %}
+                                    <td>Cuenta casa</td>
+                                {% endif %}
+                                <td>{{ operacion.fecha_operacion|time:'g:iA'|lower }}</td>
+
+                                <td>
+                                    <a href="{% url 'factura_resumen' operacion.id %}" title="Mostrar detalles"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                        Detalles
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
 
                     </tbody>
                 </table>
@@ -128,4 +191,57 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-open" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea abrir la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea realizar el cierre?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+    <script>
+        $('#confirm-open').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+
+        $('#confirm-close').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
 {% endblock %}

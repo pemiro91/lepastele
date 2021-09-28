@@ -3,9 +3,7 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Punto de Venta</h1>
     <ol class="breadcrumb">
-        {% if request.user.is_administrador or request.user.is_superuser %}
-            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
-        {% endif %}
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
     </ol>
 {% endblock %}
@@ -24,8 +22,7 @@
                         {% if not cerrarOperation.is_closed %}
                             <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
                                class="btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
-                                <i class="fas fa-circle"></i>
-                                Cerrar venta
+                                Realizar Cierre  <i class="fas fa-chevron-right"></i>
                             </a>
                         {% endif %}
                     {% endif %}

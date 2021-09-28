@@ -45,7 +45,8 @@ urlpatterns = [
     path('panel/operaciones/detalles_de_venta/<int:id_op>', views.detalles_de_operation, name="detalles_operation"),
     path('panel/operaciones/detalles_de_operation_general/<int:id_op>',
          views.detalles_de_operation_general, name="detalles_de_operation_general"),
-    path('panel/operaciones/factura_general/<int:id_op>', views.factura_general, name="factura_general"),
+    path('panel/operaciones/factura_general/<int:id_opg>/<int:id_op>', views.factura_general, name="factura_general"),
+    path('panel/operaciones/factura_resumen/<int:id_op>', views.factura_resumen, name="factura_resumen"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios
