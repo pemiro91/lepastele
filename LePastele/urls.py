@@ -40,12 +40,14 @@ urlpatterns = [
     path('panel/operaciones/pagar', views.sales_order, name="pagar"),
     path('panel/operaciones/pagar_transfer', views.sales_order_transfer, name="pagar_transfer"),
     path('panel/operaciones/pago_confirmado/<int:id_op>', views.pago_confirmado, name="pago_confirmado"),
-    path('panel/operaciones/abrir_venta', views.abrir_venta, name="abrir_venta"),
+    path('panel/operaciones/abrir_venta', views.abrir_caja, name="abrir_venta"),
+    path('panel/operaciones/cerrar_caja', views.cerrar_caja, name="cerrar_caja"),
     path('panel/operaciones/cerrar_venta', views.cerrar_venta, name="cerrar_venta"),
     path('panel/operaciones/detalles_de_venta/<int:id_op>', views.detalles_de_operation, name="detalles_operation"),
     path('panel/operaciones/detalles_de_operation_general/<int:id_op>',
          views.detalles_de_operation_general, name="detalles_de_operation_general"),
-    path('panel/operaciones/factura_general/<int:id_op>', views.factura_general, name="factura_general"),
+    path('panel/operaciones/factura_general/<int:id_opg>/<int:id_op>', views.factura_general, name="factura_general"),
+    path('panel/operaciones/factura_resumen/<int:id_op>', views.factura_resumen, name="factura_resumen"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios

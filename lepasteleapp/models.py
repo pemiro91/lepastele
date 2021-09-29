@@ -53,6 +53,7 @@ class Producto(models.Model):
 class Pedido(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, name='producto')
     cantidad_producto = models.IntegerField()
+    fecha = models.DateTimeField(datetime.datetime.now())
 
     def str(self):
         return str(self.producto)
@@ -61,6 +62,7 @@ class Pedido(models.Model):
 class Historial(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, name='producto')
     cantidad_producto = models.IntegerField()
+    fecha = models.DateTimeField(datetime.datetime.now())
 
     def str(self):
         return str(self.producto)
@@ -69,6 +71,7 @@ class Historial(models.Model):
 class FacturaFinal(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, name='producto')
     cantidad_producto = models.IntegerField()
+    fecha = models.DateTimeField(datetime.datetime.now())
 
     def str(self):
         return str(self.producto)
@@ -76,6 +79,7 @@ class FacturaFinal(models.Model):
 
 class CerrarOperacion(models.Model):
     is_closed = models.BooleanField(default=False)
+    type_closed = models.CharField(max_length=50)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
     fecha_cierre = models.DateTimeField(datetime.datetime.now())
 
