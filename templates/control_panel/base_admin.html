@@ -16,6 +16,8 @@
     <link href="{% static 'control_panel/css/ruang-admin.min.css' %}" rel="stylesheet">
     <link href="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
     <link href="{% static 'control_panel/css/payment_style.css' %}" rel="stylesheet">
+    <link href="{% static 'control_panel/dataspicker/css/gijgo.min.css' %}" rel="stylesheet">
+    <link href="{% static 'control_panel/dataspicker/css/datepicker.min.css' %}" rel="stylesheet">
 
     <style>
          a, a:hover, a:focus, a:active {
@@ -123,20 +125,19 @@
                             <span class="ml-2 d-none d-lg-inline text-white small">
                                 {{ request.user.username }}
                                 </span>
-                            {#                            {% elif request.user.is_moderador %}#}
-                            {#                                <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
-                            {#                                     style="max-width: 60px">#}
-                            {#                                <span class="ml-2 d-none d-lg-inline text-white small">#}
-                            {#                                Moderador#}
-                            {#                                </span>#}
-                            {#                            {% else %}#}
-                            {#                                <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
-                            {#                                     style="max-width: 60px">#}
-                            {#                                <span class="ml-2 d-none d-lg-inline text-white small">#}
-                            {#                                Administardor#}
-                            {#                                </span>#}
-                            {#                            {% endif %}#}
-
+{#                                {% if request.user.is_moderador %}#}
+{#                                    <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
+{#                                         style="max-width: 60px">#}
+{#                                    <span class="ml-2 d-none d-lg-inline text-white small">#}
+{#                                    Moderador#}
+{#                                    </span>#}
+{#                                {% else %}#}
+{#                                    <img class="img-profile rounded-circle" src="{% static 'control_panel/img/girl.png' %}"#}
+{#                                         style="max-width: 60px">#}
+{#                                    <span class="ml-2 d-none d-lg-inline text-white small">#}
+{#                                    Administardor#}
+{#                                    </span>#}
+{#                                {% endif %}#}
 
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

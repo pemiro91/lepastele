@@ -3,12 +3,14 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Detalles de venta</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Historial</a></li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
+        <li class="breadcrumb-item"><a href="{% url 'operaciones' %}">Ventas del día</a></li>
         <li class="breadcrumb-item active" aria-current="page">Detalles de venta</li>
     </ol>
 {% endblock %}
 {% block content %}
-
     <!-- DataTable with Hover -->
     <div class="col-lg-12">
         <div class="card mb-4">

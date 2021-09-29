@@ -1,12 +1,12 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Historial de ventas en el día</h1>
+    <h1 class="h3 mb-0 text-gray-800">Ventas del día</h1>
     <ol class="breadcrumb">
         {% if request.user.is_administrador or request.user.is_superuser %}
             <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         {% endif %}
-        <li class="breadcrumb-item active" aria-current="page">Historial de ventas en el día</li>
+        <li class="breadcrumb-item active" aria-current="page">Ventas del día</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -16,21 +16,14 @@
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_dia }} CUP</h5>
-                {% if cerrarOperation.is_closed %}
-                    {% if request.user.is_administrador or request.user.is_superuser %}
-                        <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
-                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
-                            <i class="fas fa-circle-thin"></i>
-                            Abrir venta
+                {% if request.user.is_administrador or request.user.is_superuser %}
+                    {% if isCloseCaja.is_closed %}
+                        <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                           class="m-0 float-right btn btn-primary btn-sm" title="Cierre general" data-target="#confirm-close">
+                            Cierre general  <i class="fas fa-archive"></i>
                         </a>
                     {% endif %}
-                {% else %}
-                    <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                       class="m-0 float-right btn btn-primary btn-sm" title="Cerrar venta" data-target="#confirm-close">
-                        Realizar Cierre  <i class="fas fa-chevron-right"></i>
-                    </a>
                 {% endif %}
-
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">

@@ -6,6 +6,7 @@ from django.contrib.auth import logout as do_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse
 from datetime import datetime, date, timedelta
+from django.db.models import Q, Count, Sum
 
 from lepasteleapp.models import (User, Producto, Pedido, Operacion, FacturaFinal,
                                  Categoria_Producto, Historial, CerrarOperacion, OperacionGeneral, OperacionDia)
@@ -13,6 +14,9 @@ from django.db import transaction
 from .forms import ProductoForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models.query import QuerySet
+from django.utils import timezone
+import pytz
 
 
 # --------------Panel de control----------------#
@@ -51,6 +55,15 @@ def base_admin(request):
     return redirect('login_user')
 
 
+class ProductCant:
+    def __init__(self, id, nombre, categoria, cantidad, precio):
+        self.id = id
+        self.nombre = nombre
+        self.categoria = categoria
+        self.cantidad = cantidad
+        self.precio = precio
+
+
 def panel_home(request):
     if request.user.is_authenticated:
         operaciones_generales = OperacionGeneral.objects.all()
@@ -63,11 +76,22 @@ def panel_home(request):
             propina_total += opg.propina_total_dia
         users = User.objects.filter(is_superuser=False).all()
         products = Producto.objects.all()
+        isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
+
         operacionesDia = Operacion.objects.filter(usuario=request.user).order_by('-id')[:7]
-        isClose = CerrarOperacion.objects.all().last()
+        timezone.now()
+        cantProduct = []
+        for prod in products:
+            listHistory = Historial.objects.filter(fecha__day=datetime.now().day).filter(producto=prod)\
+                .aggregate(total=Sum('cantidad_producto'))
+            prodCant = ProductCant(prod.id, prod.nombre_producto,
+                                   prod.categoria_producto, listHistory['total'], prod.precio)
+            cantProduct.append(prodCant)
+        print(cantProduct)
+
         context = {'products': products, 'total_operaciones': total_operaciones,
                    'usuarios': users, 'monto_total': monto_total, 'cerrarOperation': isClose,
-                   'propina_total': propina_total, 'operacionesDia': operacionesDia}
+                   'propina_total': propina_total, 'operacionesDia': operacionesDia, 'cantProduct': cantProduct}
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
 
@@ -136,8 +160,8 @@ def eliminar_categoria_producto(request, id_cp):
 
 # -----------------CRDU Piezas----------------------------------------#
 def productos(request):
-    productos = Producto.objects.all()
-    context = {'productos': productos}
+    products = Producto.objects.all()
+    context = {'productos': products}
     return render(request, "control_panel/gestion_del_sitio/productos/productos.html", context)
 
 
@@ -180,6 +204,7 @@ def eliminar_producto(request, id_p):
         return redirect('productos')
     return redirect('login_user')
 
+
 # --------------- CRUD Operaciones----------------------#
 
 
@@ -193,9 +218,10 @@ def operaciones_dia(request):
             propina_dia += 0.0
         else:
             propina_dia += ope.propina_del_cliente
-    isClose = CerrarOperacion.objects.all().last()
+    isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja').last()
+    isClose = CerrarOperacion.objects.filter(type_closed='general').last()
     context = {'operaciones': operations, 'total_dia': total_dia, 'propina_dia': propina_dia,
-               'cerrarOperation': isClose}
+               'cerrarOperation': isClose, 'isCloseCaja': isCloseCaja}
     return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_dia.html", context)
 
 
@@ -218,6 +244,7 @@ def operaciones_general(request):
                                                      fecha_operacion__month=o.fecha_operacion.month,
                                                      fecha_operacion__day=o.fecha_operacion.day
                                                      ).count()
+
         obVenta = Ventas(o.id, o.monto_total_dia, o.propina_total_dia, cantidadVentas, o.fecha_operacion)
         listCantidadVentas.append(obVenta)
     for operat in operationsGeneral:
@@ -249,18 +276,28 @@ def detalles_de_operation_general(request, id_op):
     return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
 
 
-def abrir_venta(request):
+def abrir_caja(request):
     if request.user.is_authenticated:
-        isClose = CerrarOperacion.objects.all().last()
+        isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
         CerrarOperacion.objects.filter(id=isClose.id).update(is_closed=False)
         messages.success(request, 'Venta abierta satisfactoriamente')
         return redirect('punto_venta')
     return redirect('login_user')
 
 
+def cerrar_caja(request):
+    if request.user.is_authenticated:
+        CerrarOperacion.objects.create(is_closed=True, type_closed='caja',
+                                       usuario=request.user, fecha_cierre=datetime.now())
+        messages.success(request, 'Caja cerrada satisfactoriamente')
+        return redirect('operaciones')
+    return redirect('login_user')
+
+
 def cerrar_venta(request):
     if request.user.is_authenticated:
-        CerrarOperacion.objects.create(is_closed=True, usuario=request.user, fecha_cierre=datetime.now())
+        CerrarOperacion.objects.create(is_closed=True, type_closed='general',
+                                       usuario=request.user, fecha_cierre=datetime.now())
         operations_day = Operacion.objects.all()
 
         for oper in operations_day:
@@ -276,7 +313,8 @@ def cerrar_venta(request):
             )
             for itemOpero in oper.pedidos.all():
                 factura = FacturaFinal.objects.create(producto=itemOpero.producto,
-                                                      cantidad_producto=itemOpero.cantidad_producto)
+                                                      cantidad_producto=itemOpero.cantidad_producto,
+                                                      fecha=datetime.now())
                 oper_day.facturas.add(factura)
         total_dia = 0.0
         total_propina = 0.0
@@ -300,7 +338,7 @@ def cerrar_venta(request):
         operations_day.delete()
 
         messages.success(request, 'Venta cerrada satisfactoriamente')
-        return redirect('punto_venta')
+        return redirect('operaciones_general')
     return redirect('login_user')
 
 
@@ -308,7 +346,7 @@ def punto_venta(request):
     products = Producto.objects.all()
     pedidos = Pedido.objects.all()
     history = Historial.objects.all()
-    isClose = CerrarOperacion.objects.all().last()
+    isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
     context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose, 'history': history}
     return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
 
@@ -328,7 +366,8 @@ def add_order(request, id_p):
         if request.method == "POST":
             producto_custom = Producto.objects.get(id=id_p)
             count_product = request.POST.get('count_product')
-            c = Pedido.objects.create(producto=producto_custom, cantidad_producto=int(count_product))
+            c = Pedido.objects.create(producto=producto_custom, cantidad_producto=int(count_product),
+                                      fecha=datetime.now())
             c.save()
             messages.success(request, 'Producto agregado al carrito')
             return redirect('punto_venta')
@@ -385,7 +424,8 @@ def sales_order(request):
                 )
                 for order in pedidos:
                     history = Historial.objects.create(producto=order.producto,
-                                                       cantidad_producto=order.cantidad_producto)
+                                                       cantidad_producto=order.cantidad_producto,
+                                                       fecha=order.fecha)
                     ope.pedidos.add(history)
 
                 Pedido.objects.all().delete()
@@ -402,7 +442,8 @@ def sales_order(request):
 
                 for order in pedidos:
                     history = Historial.objects.create(producto=order.producto,
-                                                       cantidad_producto=order.cantidad_producto)
+                                                       cantidad_producto=order.cantidad_producto,
+                                                       fecha=order.fecha)
                     ope.pedidos.add(history)
 
                 Pedido.objects.all().delete()
@@ -440,7 +481,8 @@ def sales_order_transfer(request):
 
                 for order in pedidos:
                     history = Historial.objects.create(producto=order.producto,
-                                                       cantidad_producto=order.cantidad_producto)
+                                                       cantidad_producto=order.cantidad_producto,
+                                                       fecha=order.fecha)
                     ope.pedidos.add(history)
 
                 Pedido.objects.all().delete()
