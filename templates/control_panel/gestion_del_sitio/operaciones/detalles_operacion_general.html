@@ -1,7 +1,7 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Detalles de ventas: {{ operation.fecha_operacion|date:'d-m-Y H:i' }}</h1>
+    <h1 class="h3 mb-0 text-gray-800">Detalles de ventas: {{ operation.fecha_operacion|date:'d-m-Y' }}</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         <li class="breadcrumb-item"><a href="{% url 'operaciones_general' %}">Ventas generales</a></li>
@@ -14,8 +14,9 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h5 class="m-0 font-weight-bold text-primary">Total en el día: {{ total_venta_general }} CUP</h5>
-
+                <h5 class="m-0 font-weight text-primary"><strong>Total en el día:</strong> {{ total_venta_general }} CUP</h5>
+                <h5 class="m-0 font-weight text-primary"><strong>Total por transferencia:</strong> {{ transferTotal }} CUP</h5>
+                <h5 class="m-0 font-weight text-primary"><strong>Total en efectivo:</strong> {{ cashTotal }} CUP</h5>
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">

@@ -32,8 +32,10 @@ urlpatterns = [
     # # Crud de Operaciones
     path('panel/operaciones', views.operaciones_dia, name="operaciones"),
     path('panel/operaciones_general', views.operaciones_general, name="operaciones_general"),
-    path('panel/operaciones/punto_venta', views.punto_venta, name="punto_venta"),
-    path('panel/operaciones/add_order/<int:id_p>', views.add_order, name="add_order"),
+    path('panel/operaciones/punto_venta_categoria', views.punto_venta_categoria, name="punto_venta_categoria"),
+    path('panel/operaciones/add_spending', views.add_spending, name="add_spending"),
+    path('panel/operaciones/punto_venta/<int:id_cat>', views.punto_venta, name="punto_venta"),
+    path('panel/operaciones/punto_venta/add_order/<int:id_cat>/<int:id_p>', views.add_order, name="add_order"),
     path('panel/operaciones/carrito', views.carrito, name="carrito"),
     path('panel/operaciones/edit_order/<int:id_o>', views.edit_order, name="edit_order"),
     path('panel/operaciones/delete_order/<int:id_o>', views.delete_order, name="delete_order"),
@@ -48,6 +50,10 @@ urlpatterns = [
          views.detalles_de_operation_general, name="detalles_de_operation_general"),
     path('panel/operaciones/factura_general/<int:id_opg>/<int:id_op>', views.factura_general, name="factura_general"),
     path('panel/operaciones/factura_resumen/<int:id_op>', views.factura_resumen, name="factura_resumen"),
+    path('panel/operaciones/gastos_dia', views.gastos_dia, name="gastos_dia"),
+    path('panel/operaciones/gastos_general', views.gastos_general, name="gastos_general"),
+    path('panel/operaciones/gastos_general/detalle_gasto/<int:id_gg>', views.gastos_dia_general,
+         name="gastos_dia_general"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios

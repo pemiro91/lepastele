@@ -1,10 +1,12 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Punto de Venta</h1>
+    <h1 class="h3 mb-0 text-gray-800">Productos</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Productos</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -14,19 +16,19 @@
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary"></h6>
-                {% ifnotequal pedidos.count 0 %}
+                {% if pedidos.count != 0 %}
                     <a href="{% url 'carrito' %}" type="button" class="btn btn-primary mb-1">
                     <i class="fas fa-shopping-cart"></i> Ver carrito - {{ pedidos.count }}</a>
                 {% else %}
-                    {% if pedidos.count != 0 %}
+                    {% if cerrarOperation %}
                         {% if not cerrarOperation.is_closed %}
-                            <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                             <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
                                class="btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
                                 Cierre de Caja <i class="fas fa-box"></i>
                             </a>
                         {% endif %}
                     {% endif %}
-                {% endifnotequal %}
+                {% endif %}
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
@@ -37,8 +39,10 @@
                         <th>Descripción</th>
                         <th>Categoría</th>
                         <th>Precio</th>
-                        {% if not cerrarOperation.is_closed %}
-                            <th>Acciones</th>
+                        {% if cerrarOperation %}
+                            {% if not cerrarOperation.is_closed %}
+                                <th>Acciones</th>
+                            {% endif %}
                         {% endif %}
                     </tr>
                     </thead>
@@ -50,15 +54,17 @@
                             <td width="25%">{{ producto.descripcion }}</td>
                             <td>{{ producto.categoria_producto }}</td>
                             <td>{{ producto.precio }} CUP</td>
-                            {% if not cerrarOperation.is_closed %}
-                                <td>
-                                    <a href="#" type="button" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
-                                       data-id="{{ producto.id }}" data-url="{% url 'add_order' producto.id %}"
-                                       title="Agregar producto" data-target="#confirm-count">
-                                        <i class="fas fa-plus"></i>
-                                        Agregar
-                                    </a>
-                                </td>
+                            {% if cerrarOperation %}
+                                {% if not cerrarOperation.is_closed %}
+                                    <td>
+                                        <a href="#" type="button" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
+                                           data-id="{{ producto.id }}" data-url="{% url 'add_order' category.id producto.id %}"
+                                           title="Agregar producto" data-target="#confirm-count">
+                                            <i class="fas fa-plus"></i>
+                                            Agregar
+                                        </a>
+                                    </td>
+                                {% endif %}
                             {% endif %}
                         </tr>
                     {% endfor %}
@@ -81,13 +87,14 @@
                 </div>
                 <div class="modal-body">
                     <form id="add_order_form" action="" method="post">{% csrf_token %}
-                      <div class="form-group">
+                      <div class="form-group has-error">
                         <label for="recipient-name" class="col-form-label">Cantidad:</label>
                         <input type="number" name="count_product" class="form-control" id="recipient-name">
+                        <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-secondary btn-ok" >Agregar al carrito</button>
+                        <button type="button" class="btn btn-secondary btn-ok" onclick="submitFunction(1)" >Agregar al carrito</button>
                       </div>
                     </form>
                 </div>
@@ -125,12 +132,25 @@
         });
     </script>
 
+
+
     <script>
+        var id
         $(document).on('click','.waves-black',function(){
-            var id = $(this).data('id');
+            id = $(this).data('id');
             console.log(id)
-            $("#add_order_form").attr("action", "add_order/" + id);
         });
+        function submitFunction(i) {
+            const amountClient = $('#recipient-name');
+            if (!amountClient.val()){
+               $("#shieldRequired").show();
+               i.preventDefault();
+            }else{
+               $("#shieldRequired").hide();
+               $("#add_order_form").attr("action", "add_order/" + {{ category.id }} + "/" + id);
+            }
+            document.forms["add_order_form"].submit()
+        }
     </script>
 
     <script>

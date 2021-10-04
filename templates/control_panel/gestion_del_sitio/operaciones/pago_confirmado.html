@@ -3,7 +3,7 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Factura de Pago</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'punto_venta' %}">Punto de Venta</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
         <li class="breadcrumb-item active" aria-current="page">Factura de Pago</li>
     </ol>
 {% endblock %}
@@ -22,7 +22,26 @@
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h5><strong>Factura de Pago No. {{ operation.id }}</strong></h5>
-                                        <span class="font-weight-bold d-block mt-4">Realizada por: {{ user.first_name }}</span>
+                                        <span class="font-weight d-block mt-4"><strong>Realizada por: </strong>{{ user.first_name }}</span>
+                                        <span class="font-weight d-block text-muted"><strong>Tipo de pago: </strong>
+                                            {% if  operation.tipo_pago == 'cash' %}
+                                                Efectivo
+                                            {% elif operation.tipo_pago == 'transfer' %}
+                                                Transferencia
+                                            {% elif operation.tipo_pago == 'charge' %}
+                                                Encargo
+                                            {% elif operation.tipo_pago == 'home_account' %}
+                                                Cuenta casa
+                                            {% endif %}
+                                        </span>
+                                        {% if operation.numero_de_transferencia != None %}
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight d-block text-muted"><strong>No. de transacción: </strong>
+                                                    {{ operation.numero_de_transferencia }}</span>
+                                                </div>
+                                            </td>
+                                        {% endif %}
                                     </div>
                                     <div class="col-lg-3">
                                         <img style="width: 100%;" src="{% static 'control_panel/img/logo.jpg' %}" alt="logo">
@@ -31,47 +50,7 @@
 
 
                                 <div class="payment border-top mt-3 mb-3 border-bottom table-responsive">
-                                    <table class="table table-borderless">
-                                        <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="py-2">
-                                                    <span class="font-weight-bold d-block text-muted">Fecha</span>
-                                                    <span>{{ operation.fecha_operacion|date }}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="py-2">
-                                                    <span class="font-weight-bold d-block text-muted">No. perdido</span>
-                                                    <span>{{ operation.id }}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="py-2">
-                                                    <span class="font-weight-bold d-block text-muted">Tipo de pago</span>
-                                                    {% if  operation.tipo_pago == 'cash' %}
-                                                        <span>Efectivo</span>
-                                                    {% elif operation.tipo_pago == 'transfer' %}
-                                                        <span>Transferencia</span>
-                                                    {% elif operation.tipo_pago == 'charge' %}
-                                                        <span>Encargo</span>
-                                                    {% elif operation.tipo_pago == 'home_account' %}
-                                                        <span>Cuenta casa</span>
-                                                    {% endif %}
 
-                                                </div>
-                                            </td>
-                                            {% if operation.numero_de_transferencia != None %}
-                                                <td>
-                                                    <div class="py-2">
-                                                        <span class="font-weight-bold d-block text-muted">No. de transacción</span>
-                                                        <span>{{ operation.numero_de_transferencia }}</span></div>
-                                                </td>
-                                            {% endif %}
-
-                                        </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                                 <div class="product border-bottom table-responsive">
                                     <table class="table table-borderless">
@@ -103,12 +82,11 @@
                                             {% if operation.tipo_pago == 'home_account' %}
                                                 <tr>
                                                     <td>
-                                                        <div class="text-left"><span class="font-weight-bold">Total</span>
-                                                        </div>
+                                                        <div class="text-left"><h6><span class="font-weight-bold">Total</span></h6></div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-right"><span
-                                                                class="font-weight-bold">{{ operation.monto_total_a_pagar }} CUP</span>
+                                                        <div class="text-right"><h6><span
+                                                                class="font-weight-bold">{{ operation.monto_total_a_pagar }} CUP</span></h6>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -117,22 +95,22 @@
                                             {% if operation.tipo_pago != 'home_account' %}
                                                 <tr>
                                                     <td>
-                                                        <div class="text-left"><span
-                                                                class="text-muted">Total a pagar</span></div>
+                                                        <div class="text-left"><h6><span
+                                                                class="text-muted">Total a pagar</span></h6></div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-right">
-                                                            <span>{{ operation.monto_total_a_pagar }} CUP</span></div>
+                                                        <div class="text-right"><h6>
+                                                            <span>{{ operation.monto_total_a_pagar }} CUP</span></h6></div>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <div class="text-left"><span class="text-muted">Monto pagado por el cliente</span>
+                                                        <div class="text-left"><h6><span class="text-muted">Monto pagado por el cliente</span></h6>
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-right">
-                                                            <span>{{ operation.monto_pagado_cliente }} CUP</span></div>
+                                                        <div class="text-right"><h6>
+                                                            <span>{{ operation.monto_pagado_cliente }} CUP</span></h6></div>
                                                     </td>
                                                 </tr>
                                                 <tr class="border-top
@@ -140,24 +118,24 @@
                                                     border-bottom
                                                  {% endif %}">
                                                     <td>
-                                                        <div class="text-left"><span class="font-weight-bold">Monto a devolver</span>
+                                                        <div class="text-left"><h6><span class="font-weight-bold">Monto a devolver</span></h6>
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-right"><span
-                                                                class="font-weight-bold">{{ operation.monto_a_devolver }} CUP</span>
+                                                        <div class="text-right"><h6><span
+                                                                class="font-weight-bold">{{ operation.monto_a_devolver }} CUP</span></h6>
                                                         </div>
                                                     </td>
                                                 </tr>
                                                 {% if operation.propina_del_cliente != None %}
                                                     <tr class="border-bottom">
                                                         <td>
-                                                            <div class="text-left"><span class="font-weight-bold">Propina</span>
+                                                            <div class="text-left"><h6><span class="font-weight-bold">Propina</span></h6>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-right"><span
-                                                                    class="font-weight-bold">{{ operation.propina_del_cliente }} CUP</span>
+                                                            <div class="text-right"><h6><span
+                                                                    class="font-weight-bold">{{ operation.propina_del_cliente }} CUP</span></h6>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -174,7 +152,7 @@
                                                                        {% endif %}
                                                                        type="checkbox" id="gridCheck1">
                                                                 <label class="form-check-label" for="gridCheck1">
-                                                                    Definir propina
+                                                                    <h6>Definir propina</h6>
                                                                 </label>
                                                             </div>
                                                         </td>

@@ -3,8 +3,9 @@
 {% block submenu-superior %}
     <h1 class="h3 mb-0 text-gray-800">Categorías de Productos</h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="">Gestión del Sitio</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'productos' %}">Productos</a></li>
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
         <li class="breadcrumb-item active" aria-current="page">Categorías de Productos</li>
     </ol>
 {% endblock %}

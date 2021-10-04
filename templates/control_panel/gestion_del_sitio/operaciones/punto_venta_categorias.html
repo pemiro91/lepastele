@@ -1,0 +1,188 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Punto de Venta</h1>
+    <ol class="breadcrumb">
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <a href="#" data-toggle="modal" class="btn btn-primary btn-sm" title="Realizar cierre de caja"
+               data-target="#confirm-gasto">Gasto <i class="fas fa-hand-point-left"></i>
+            </a>
+            <h6 class="m-0 font-weight-bold text-primary"></h6>
+                {% if pedidos.count != 0 %}
+                    <a href="{% url 'carrito' %}" type="button" class="btn btn-primary mb-1">
+                    <i class="fas fa-shopping-cart"></i> Ver carrito - {{ pedidos.count }}</a>
+                {% else %}
+                    {% if history.count != 0 %}
+                        {% if not cerrarOperation.is_closed %}
+                             <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                               class="btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
+                                Cierre de Caja <i class="fas fa-box"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nro</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cant.Producto</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nro</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cant.Producto</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for cp in categorias_productos %}
+                        <tr>
+                            <td>{{ cp.id }}</td>
+                            <td>{{ cp.nombre_categoria }}</td>
+                            <td>{{ cp.descripcion_category }}</td>
+                            <td>{{ cp.countProduct }}</td>
+                            <td>
+                                <a href="{% url 'punto_venta' cp.id %}"
+                                   title="Ver productos de la categoría"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Ver Productos
+                                </a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea cerrar la caja?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-gasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Gasto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+{#                        <h4 class="font-weight-bold text-primary text-center">CUP</h4>#}
+                        <form id="data_gastos_form" method="post" action="" class="needs-validation" novalidate>{% csrf_token %}
+
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="description_amount" class="col-form-label">Descripción del gasto:</label>
+                            <input type="text" name="description_amount"
+                                   class="form-control required" id="description_amount"  >
+                            <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                          </div>
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="gasto_amount" class="col-form-label">Monto del gasto:</label>
+                            <input type="number" name="gasto_amount"
+                                   class="form-control required" id="gasto_amount"  >
+                            <div id="shieldRequired2" class="invalid-feedback">El campo no debe estar vacio.</div>
+                            <div id="shieldAmount" class="invalid-feedback">El monto del gasto no debe ser 0.</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="button"  class="btn btn-primary btn-ok" id="pagar3" name="pagar3"
+                                   value="Guardar" onclick="submitFunction(0)"/>
+                          </div>
+                        </form>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+    <script>
+        var id
+        $(document).on('click','.waves-black',function(){
+            id = $(this).data('id');
+            console.log(id)
+        });
+        function submitFunction(i) {
+            const descriptionAmount = $('#description_amount');
+            const gastoAmount = $('#gasto_amount');
+            if (!descriptionAmount.val()){
+               $("#shieldRequired").show();
+               i.preventDefault();
+            }else if (!gastoAmount.val()){
+               $("#shieldRequired2").show();
+               i.preventDefault();
+            }
+            else{
+               $("#shieldRequired").hide();
+               $("#shieldRequired2").hide();
+               if (gastoAmount.val() === 0){
+                   $("#shieldAmount").show();
+                   i.preventDefault();
+               }else {
+                   $("#data_gastos_form").attr("action", "add_spending");
+               }
+            }
+            document.forms["data_gastos_form"].submit()
+        }
+    </script>
+
+    <script>
+        $('#confirm-close').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
+{% endblock %}

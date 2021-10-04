@@ -132,13 +132,20 @@ class OperacionGeneral(models.Model):
     def str(self):
         return str(self.pedidos)
 
-# def get_image_filename(instance, filename):
-#     nombre_pieza = instance.pieza.nombre_producto
-#     slug = slugify(nombre_pieza)
-#     return "productos_imagenes/%s-%s" % (slug, filename)
 
-#
-# class Imagenes(models.Model):
-#     producto = models.ForeignKey(Producto, default=None, on_delete=models.CASCADE)
-#     imagen = models.ImageField(upload_to=get_image_filename,
-#                                verbose_name='imagen')
+class Gastos(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, name='usuario')
+    descripcion_gasto = models.CharField(max_length=200)
+    monto_gasto = models.FloatField(max_length=100)
+    fecha_gasto = models.DateTimeField(datetime.datetime.now())
+
+    def str(self):
+        return str(self.descripcion_gasto)
+
+
+class GastosGeneral(models.Model):
+    monto_gasto_general = models.FloatField(max_length=100)
+    fecha_gasto_general = models.DateTimeField(datetime.datetime.now())
+
+    def str(self):
+        return str(self.monto_gasto_general)

@@ -76,7 +76,7 @@
                 <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Operaciones</h6>
-                        <a class="collapse-item" href="{% url 'punto_venta' %}">Punto de ventas</a>
+                        <a class="collapse-item" href="{% url 'punto_venta_categoria' %}">Punto de ventas</a>
                         {% if operaciones_del_dia.count != 0 %}
                             <a class="collapse-item" href="{% url 'operaciones' %}">Ventas del día</a>
                         {% endif %}
@@ -85,6 +85,8 @@
                                 <a class="collapse-item" href="{% url 'operaciones_general' %}">Ventas generales</a>
                             {% endif %}
                         {% endif %}
+                        <a class="collapse-item" href="{% url 'gastos_dia' %}">Gastos del día</a>
+                        <a class="collapse-item" href="{% url 'gastos_general' %}">Gastos generales</a>
                     </div>
                 </div>
             </li>

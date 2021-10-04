@@ -1,0 +1,73 @@
+{% extends  'control_panel/base_admin.html' %}
+{% load static %}
+{% block submenu-superior %}
+    <h1 class="h3 mb-0 text-gray-800">Gastos generales</h1>
+    <ol class="breadcrumb">
+        {% if request.user.is_administrador or request.user.is_superuser %}
+            <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Gastos general</li>
+    </ol>
+{% endblock %}
+{% block content %}
+
+    <!-- DataTable with Hover -->
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h5 class="m-0 font-weight-bold text-primary">Total de gastos general: {{ totalGastosGeneral }} CUP</h5>
+            </div>
+            <div class="table-responsive p-3">
+                <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Monto</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Monto</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for gasto in gastos %}
+                        <tr>
+                            <td>{{ gasto.id }}</td>
+                            <td>{{ gasto.monto_gasto_general }} CUP</td>
+                            <td>{{ gasto.fecha_gasto_general|date }}</td>
+                            <td>
+                                <a href="{% url 'gastos_dia_general' gasto.id %}" title="Mostrar detalles"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                    Detalles
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <!-- Page level plugins -->
+    <script src="{% static 'control_panel/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'control_panel/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(); // ID From dataTable
+            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+        });
+    </script>
+
+{% endblock %}

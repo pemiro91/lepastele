@@ -71,7 +71,48 @@
                     </div>
                 </div>
             </a>
-
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <a href="{% url 'operaciones_general' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Monto total en efectivo</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ countCash }}</div>
+        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+        {#                            <span>Since last month</span>#}
+        {#                        </div>#}
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <a href="{% url 'operaciones_general' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Monto total por transfermóvil</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ countTransfer }}</div>
+        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
+        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+        {#                            <span>Since last month</span>#}
+        {#                        </div>#}
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-check fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
         </div>
 {#        <div class="col-xl-4 col-md-6 mb-4">#}
 {#            <div class="card h-100">#}
@@ -117,27 +158,37 @@
         <div class="card">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Últimas 7 ventas realizadas en el día </h6>
-                {% if cerrarOperation.is_closed %}
+                {% if cerrarOperation %}
+                    {% if cerrarOperation.is_closed %}
+                        {% if request.user.is_administrador or request.user.is_superuser %}
+                            <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                               class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                                Abrir venta <i class="fas fa-box-open"></i>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% if request.user.is_administrador or request.user.is_superuser %}
+                            <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general" data-target="#confirm-close">
+                                Cierre general  <i class="fas fa-archive"></i>
+                            </a>
+                        {% else %}
+                            <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
+                                Cierre de Caja  <i class="fas fa-box"></i>
+                            </a>
+                        {% endif %}
+
+                    {% endif %}
+                {% else %}
                     {% if request.user.is_administrador or request.user.is_superuser %}
                         <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
                            class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
                             Abrir venta <i class="fas fa-box-open"></i>
                         </a>
                     {% endif %}
-                {% else %}
-                    {% if request.user.is_administrador or request.user.is_superuser %}
-                        <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                           class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general" data-target="#confirm-close">
-                            Cierre general  <i class="fas fa-archive"></i>
-                        </a>
-                    {% else %}
-                        <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
-                           class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
-                            Cierre de Caja  <i class="fas fa-box"></i>
-                        </a>
-                    {% endif %}
-
                 {% endif %}
+
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush" >

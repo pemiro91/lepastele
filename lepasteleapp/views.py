@@ -8,7 +8,7 @@ from django.urls import reverse
 from datetime import datetime, date, timedelta
 from django.db.models import Q, Count, Sum
 
-from lepasteleapp.models import (User, Producto, Pedido, Operacion, FacturaFinal,
+from lepasteleapp.models import (User, Producto, Pedido, Operacion, FacturaFinal, Gastos, GastosGeneral,
                                  Categoria_Producto, Historial, CerrarOperacion, OperacionGeneral, OperacionDia)
 from django.db import transaction
 from .forms import ProductoForm
@@ -67,6 +67,8 @@ class ProductCant:
 def panel_home(request):
     if request.user.is_authenticated:
         operaciones_generales = OperacionGeneral.objects.all()
+        count_operaciones_generales_cash = OperacionDia.objects.filter(tipo_pago='cash').count()
+        count_operaciones_generales_transfermovil = OperacionDia.objects.filter(tipo_pago='transfer').count()
         total_operaciones = 0
         monto_total = 0.0
         propina_total = 0.0
@@ -77,31 +79,33 @@ def panel_home(request):
         users = User.objects.filter(is_superuser=False).all()
         products = Producto.objects.all()
         isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
+        isCloseGeneral = CerrarOperacion.objects.filter(type_closed='general').last()
 
         operacionesDia = Operacion.objects.filter(usuario=request.user).order_by('-id')[:7]
         timezone.now()
         cantProduct = []
         for prod in products:
-            listHistory = Historial.objects.filter(fecha__day=datetime.now().day).filter(producto=prod)\
+            listHistory = Historial.objects.filter(fecha__day=datetime.now().day).filter(producto=prod) \
                 .aggregate(total=Sum('cantidad_producto'))
             prodCant = ProductCant(prod.id, prod.nombre_producto,
                                    prod.categoria_producto, listHistory['total'], prod.precio)
             cantProduct.append(prodCant)
-        print(cantProduct)
 
         context = {'products': products, 'total_operaciones': total_operaciones,
                    'usuarios': users, 'monto_total': monto_total, 'cerrarOperation': isClose,
+                   'countCash': count_operaciones_generales_cash,
+                   'isCloseGeneral': isCloseGeneral, 'countTransfer': count_operaciones_generales_transfermovil,
                    'propina_total': propina_total, 'operacionesDia': operacionesDia, 'cantProduct': cantProduct}
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
 
 
 #
-# -----------------CRDU Categorias de Piezas---------------------------#
+# -----------------CRDU Categorias de productos---------------------------#
 def categorias_productos(request):
     if request.user.is_authenticated:
-        categorias_productos = Categoria_Producto.objects.all()
-        context = {'categorias_productos': categorias_productos}
+        categorias_products = Categoria_Producto.objects.all()
+        context = {'categorias_productos': categorias_products}
         return render(request,
                       "control_panel/gestion_del_sitio/productos/categorias_productos/categorias_productos.html",
                       context)
@@ -158,7 +162,7 @@ def eliminar_categoria_producto(request, id_cp):
     return redirect('login_user')
 
 
-# -----------------CRDU Piezas----------------------------------------#
+# -----------------CRUD Productos----------------------------------------#
 def productos(request):
     products = Producto.objects.all()
     context = {'productos': products}
@@ -210,15 +214,17 @@ def eliminar_producto(request, id_p):
 
 def operaciones_dia(request):
     operations = Operacion.objects.all()
+    operationsTotal = Operacion.objects.exclude(tipo_pago='home_account')
     total_dia = 0.0
     propina_dia = 0.0
-    for ope in operations:
+    for ope in operationsTotal:
+        print(ope.monto_total_a_pagar)
         total_dia += ope.monto_total_a_pagar
         if ope.propina_del_cliente is None:
             propina_dia += 0.0
         else:
             propina_dia += ope.propina_del_cliente
-    isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja').last()
+    isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja', is_closed=True).last()
     isClose = CerrarOperacion.objects.filter(type_closed='general').last()
     context = {'operaciones': operations, 'total_dia': total_dia, 'propina_dia': propina_dia,
                'cerrarOperation': isClose, 'isCloseCaja': isCloseCaja}
@@ -236,25 +242,39 @@ class Ventas:
 
 def operaciones_general(request):
     operationsGeneral = OperacionGeneral.objects.all()
+    # operationsGeneral = OperacionDia.objects.all()
     total_venta_general = 0.0
     propina_general = 0.0
     listCantidadVentas = []
+    listTemp = QuerySet
     for o in operationsGeneral:
         cantidadVentas = OperacionDia.objects.filter(fecha_operacion__year=o.fecha_operacion.year,
                                                      fecha_operacion__month=o.fecha_operacion.month,
                                                      fecha_operacion__day=o.fecha_operacion.day
                                                      ).count()
 
+        listTemp = OperacionDia.objects.filter(fecha_operacion__year=o.fecha_operacion.year,
+                                               fecha_operacion__month=o.fecha_operacion.month,
+                                               fecha_operacion__day=o.fecha_operacion.day).filter(
+            tipo_pago='home_account')
+
         obVenta = Ventas(o.id, o.monto_total_dia, o.propina_total_dia, cantidadVentas, o.fecha_operacion)
         listCantidadVentas.append(obVenta)
+
     for operat in operationsGeneral:
         total_venta_general += operat.monto_total_dia
         if operat.propina_total_dia is None:
             propina_general += 0.0
         else:
             propina_general += operat.propina_total_dia
+
+    cuentaCasaTotal = 0.0
+    for cuenta in listTemp:
+        cuentaCasaTotal += cuenta.monto_total_a_pagar
+
+    totalVentaGeneral = total_venta_general - cuentaCasaTotal
     context = {'operationsGeneral': listCantidadVentas,
-               'total_venta_general': total_venta_general, 'propina_general': propina_general}
+               'total_venta_general': totalVentaGeneral, 'propina_general': propina_general}
     return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_general.html", context)
 
 
@@ -267,11 +287,40 @@ def detalles_de_operation_general(request, id_op):
                                               fecha_operacion__month=operation.fecha_operacion.month,
                                               fecha_operacion__day=operation.fecha_operacion.day)
 
+    totalVentasCash = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                                  fecha_operacion__month=operation.fecha_operacion.month,
+                                                  fecha_operacion__day=operation.fecha_operacion.day).filter(
+        tipo_pago='cash')
+
+    totalVentasTransfer = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                                      fecha_operacion__month=operation.fecha_operacion.month,
+                                                      fecha_operacion__day=operation.fecha_operacion.day).filter(
+        tipo_pago='transfer')
+
+    listTemp = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                           fecha_operacion__month=operation.fecha_operacion.month,
+                                           fecha_operacion__day=operation.fecha_operacion.day).filter(
+        tipo_pago='home_account')
+
+    cuentaCasaTotal = 0.0
+    cashTotal = 0.0
+    transferTotal = 0.0
+    for cash in totalVentasCash:
+        cashTotal += cash.monto_total_a_pagar
+    for transfer in totalVentasTransfer:
+        transferTotal += transfer.monto_total_a_pagar
+    for cuenta in listTemp:
+        cuentaCasaTotal += cuenta.monto_total_a_pagar
+
+    totalVentaGeneral = total_venta_general - cuentaCasaTotal
+
     context = {
         'operation': operation,
-        'total_venta_general': total_venta_general,
+        'total_venta_general': totalVentaGeneral,
         'propina_general': propina_general,
-        'totalVentas': totalVentas
+        'totalVentas': totalVentas,
+        'cashTotal': cashTotal,
+        'transferTotal': transferTotal
     }
     return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
 
@@ -279,9 +328,13 @@ def detalles_de_operation_general(request, id_op):
 def abrir_caja(request):
     if request.user.is_authenticated:
         isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
-        CerrarOperacion.objects.filter(id=isClose.id).update(is_closed=False)
+        if not isClose:
+            CerrarOperacion.objects.create(is_closed=False, type_closed='caja',
+                                           usuario=request.user, fecha_cierre=datetime.now())
+        else:
+            CerrarOperacion.objects.filter(id=isClose.id).update(is_closed=False)
         messages.success(request, 'Venta abierta satisfactoriamente')
-        return redirect('punto_venta')
+        return redirect('punto_venta_categoria')
     return redirect('login_user')
 
 
@@ -332,6 +385,18 @@ def cerrar_venta(request):
             fecha_operacion=datetime.now()
         )
         listOperationsDia = OperacionDia.objects.all()
+
+        gastos = Gastos.objects.filter(fecha_gasto__year=datetime.now().year,
+                                       fecha_gasto__month=datetime.now().month,
+                                       fecha_gasto__day=datetime.now().day)
+        gasto_dia = 0.0
+        for gasto in gastos:
+            gasto_dia += gasto.monto_gasto
+
+        print(gasto_dia)
+
+        GastosGeneral.objects.create(monto_gasto_general=gasto_dia, fecha_gasto_general=datetime.now())
+
         for operationDay in listOperationsDia:
             operation_general.operaciones.add(operationDay)
 
@@ -342,13 +407,98 @@ def cerrar_venta(request):
     return redirect('login_user')
 
 
-def punto_venta(request):
-    products = Producto.objects.all()
-    pedidos = Pedido.objects.all()
-    history = Historial.objects.all()
-    isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
-    context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose, 'history': history}
-    return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
+class CategoryProduct:
+    def __init__(self, id, nombre_categoria, descripcion_category, countProduct):
+        self.id = id
+        self.nombre_categoria = nombre_categoria
+        self.descripcion_category = descripcion_category
+        self.countProduct = countProduct
+
+
+def punto_venta_categoria(request):
+    if request.user.is_authenticated:
+        categorias_products = Categoria_Producto.objects.all()
+        products = Producto.objects.all()
+        pedidos = Pedido.objects.all()
+        history = Historial.objects.all()
+        isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
+
+        lisCountP = []
+        for catP in categorias_products:
+            prodCount = Producto.objects.filter(categoria_producto=catP).all().count()
+            categoryProduct = CategoryProduct(catP.id, catP.nombre_categoria, catP.descripcion, prodCount)
+            lisCountP.append(categoryProduct)
+
+        context = {'categorias_productos': lisCountP, 'productos': products,
+                   'pedidos': pedidos, 'cerrarOperation': isClose, 'history': history}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta_categorias.html", context)
+    return redirect('login_user')
+
+
+def add_spending(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            description_amount = request.POST.get('description_amount')
+            gasto_amount = request.POST.get('gasto_amount')
+            c = Gastos.objects.create(usuario=request.user, descripcion_gasto=description_amount,
+                                      monto_gasto=gasto_amount, fecha_gasto=datetime.now())
+            c.save()
+            messages.success(request, 'Gasto registrado satisfactoriamente')
+            return redirect('punto_venta_categoria')
+        context = {}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
+    return redirect('login_user')
+
+
+def gastos_dia(request):
+    if request.user.is_authenticated:
+        gastos = Gastos.objects.filter(fecha_gasto__year=datetime.now().year,
+                                       fecha_gasto__month=datetime.now().month,
+                                       fecha_gasto__day=datetime.now().day)
+        totalGastosDia = 0.0
+        for gasto in gastos:
+            totalGastosDia += gasto.monto_gasto
+        context = {'gastos': gastos, 'totalGastosDia': totalGastosDia}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/gastos/gastos_dia.html", context)
+    return redirect('login_user')
+
+
+def gastos_general(request):
+    if request.user.is_authenticated:
+        gastos = GastosGeneral.objects.all()
+        totalGastosGeneral = 0.0
+        for gasto in gastos:
+            totalGastosGeneral += gasto.monto_gasto_general
+        context = {'gastos': gastos, 'totalGastosGeneral': totalGastosGeneral}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/gastos/gastos_general.html", context)
+    return redirect('login_user')
+
+
+def gastos_dia_general(request, id_gg):
+    if request.user.is_authenticated:
+        gastoGeneral = get_object_or_404(GastosGeneral, id=id_gg)
+        gastos = Gastos.objects.filter(fecha_gasto__year=gastoGeneral.fecha_gasto_general.year,
+                                       fecha_gasto__month=gastoGeneral.fecha_gasto_general.month,
+                                       fecha_gasto__day=gastoGeneral.fecha_gasto_general.day)
+        totalGastosDia = 0.0
+        for gasto in gastos:
+            totalGastosDia += gasto.monto_gasto
+        context = {'gastos': gastos, 'totalGastosDia': totalGastosDia, 'id_gg': id_gg}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/gastos/gastos_dia.html", context)
+    return redirect('login_user')
+
+
+def punto_venta(request, id_cat):
+    if request.user.is_authenticated:
+        category = get_object_or_404(Categoria_Producto, id=id_cat)
+        products = Producto.objects.filter(categoria_producto=id_cat)
+        pedidos = Pedido.objects.all()
+        history = Historial.objects.all()
+        isClose = CerrarOperacion.objects.filter(type_closed='caja').last()
+        context = {'productos': products, 'pedidos': pedidos, 'cerrarOperation': isClose, 'history': history,
+                   'category': category}
+        return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
+    return redirect('login_user')
 
 
 def carrito(request):
@@ -361,7 +511,7 @@ def carrito(request):
     return render(request, "control_panel/gestion_del_sitio/operaciones/carrito.html", context)
 
 
-def add_order(request, id_p):
+def add_order(request, id_cat, id_p):
     if request.user.is_authenticated:
         if request.method == "POST":
             producto_custom = Producto.objects.get(id=id_p)
@@ -370,7 +520,8 @@ def add_order(request, id_p):
                                       fecha=datetime.now())
             c.save()
             messages.success(request, 'Producto agregado al carrito')
-            return redirect('punto_venta')
+            print(id_cat)
+            return redirect(reverse('punto_venta', args=(id_cat,)))
         context = {}
         return render(request, "control_panel/gestion_del_sitio/operaciones/punto_venta.html", context)
     return redirect('login_user')

@@ -6,7 +6,7 @@
         {% if request.user.is_administrador or request.user.is_superuser %}
             <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         {% endif %}
-        <li class="breadcrumb-item"><a href="{% url 'punto_venta' %}">Punto de Venta</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
         <li class="breadcrumb-item active" aria-current="page">Carrito</li>
     </ol>
 {% endblock %}
@@ -17,10 +17,13 @@
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h4 class="m-0 font-weight-bold text-primary">Total a pagar: {{ total_pagar }} CUP</h4>
-                <a href="#" type="button" data-toggle="modal"
-                   class="btn btn-primary btn-sm waves-pay"
-                   title="Pagar" data-target="#confirm-pay">
-                    <i class="fas fa-money-check"></i> Pagar</a>
+                {% if pedidos.count != 0 %}
+                    <a href="#" type="button" data-toggle="modal"
+                       class="btn btn-primary btn-sm waves-pay"
+                       title="Pagar" data-target="#confirm-pay">
+                        <i class="fas fa-money-check"></i> Pagar</a>
+                {% endif %}
+
 
             </div>
             <div class="table-responsive p-3">
@@ -137,7 +140,6 @@
                               <option selected disabled="disabled">Seleccione un tipo de pago</option>
                               <option value="cash">Efectivo</option>
                               <option value="transfer">Transferencia</option>
-                              <option value="charge">Encargo</option>
                               <option value="home_account">Cuenta casa</option>
                             </select>
                           </div>
@@ -220,13 +222,6 @@
                 $("#transaction").show();
                 $("#pagar1").hide();
                 $("#pagar2").show();
-                $("#pagar3").hide();
-              }
-              else if ( this.value === 'charge'){
-                $("#monto_client").show();
-                $("#transaction").hide();
-                $("#pagar1").show();
-                $("#pagar2").hide();
                 $("#pagar3").hide();
               }
               else {
