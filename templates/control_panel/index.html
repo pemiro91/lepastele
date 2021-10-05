@@ -52,13 +52,18 @@
             </a>
         </div>
         <div class="col-xl-4 col-md-6 mb-4">
-            <a href="{% url 'usuarios' %}">
+            <a href="{% url 'operaciones_general' %}">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Usuarios</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ usuarios.count }}</div>
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Monto Total por encargo</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {% if total_charge %}
+                                        {{ total_charge }} CUP
+                                    {% else %}
+                                        0.0 CUP
+                                    {% endif %} </div>
         {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
         {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
         {#                            <span>Since last month</span>#}
@@ -79,11 +84,13 @@
                         <div class="row align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-uppercase mb-1">Monto total en efectivo</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ countCash }}</div>
-        {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-        {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
-        {#                            <span>Since last month</span>#}
-        {#                        </div>#}
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {% if countCash %}
+                                        {{ countCash }} CUP
+                                    {% else %}
+                                        0.0 CUP
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-money-bill fa-2x text-primary"></i>
@@ -100,14 +107,37 @@
                         <div class="row align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-uppercase mb-1">Monto total por transfermóvil</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ countTransfer }}</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {% if countTransfer %}
+                                        {{ countTransfer }} CUP
+                                    {% else %}
+                                        0.0 CUP
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-credit-card fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <a href="{% url 'gastos_general' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Gastos generales</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ gastos_total }} CUP</div>
         {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
         {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
         {#                            <span>Since last month</span>#}
         {#                        </div>#}
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-money-check fa-2x text-primary"></i>
+                                <i class="fas fa-sort-amount-down fa-2x text-primary"></i>
                             </div>
                         </div>
                     </div>

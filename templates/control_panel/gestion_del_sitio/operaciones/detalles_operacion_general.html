@@ -14,9 +14,28 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h5 class="m-0 font-weight text-primary"><strong>Total en el día:</strong> {{ total_venta_general }} CUP</h5>
-                <h5 class="m-0 font-weight text-primary"><strong>Total por transferencia:</strong> {{ transferTotal }} CUP</h5>
-                <h5 class="m-0 font-weight text-primary"><strong>Total en efectivo:</strong> {{ cashTotal }} CUP</h5>
+                <h6 class="m-0 font-weight-bold text-primary">Total en el día: {{ totalVentasFinal }} CUP</h6>
+                <h6 class="m-0 font-weight text-primary"><strong>Total por transferencia:</strong>
+                    {% if transferTotal %}
+                        {{ transferTotal }} CUP
+                    {% else %}
+                        0.0 CUP
+                    {% endif %}
+                </h6>
+                <h6 class="m-0 font-weight text-primary"><strong>Total en efectivo:</strong>
+                    {% if cashTotal %}
+                        {{ cashTotal }} CUP
+                    {% else %}
+                        0.0 CUP
+                    {% endif %}
+                </h6>
+                <h6 class="m-0 font-weight text-primary"><strong>Total por encargo:</strong>
+                    {% if totalVentasEncargo %}
+                        {{ totalVentasEncargo }} CUP
+                    {% else %}
+                        0.0 CUP
+                    {% endif %}
+                </h6>
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
@@ -61,11 +80,18 @@
                             {% endif %}
                             <td>{{ var_operation.fecha_operacion|date }}</td>
                             <td>
-                                <a href="{% url 'factura_general' operation.id var_operation.id %}" title="Mostrar detalles"
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye"></i>
-                                    Detalles
-                                </a>
+                                {% if var_operation.tipo_pago == 'charge' %}
+                                    <a href="#" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
+                                       title="Realizar encargo" data-content="{{ var_operation.descripcion_encargo }}"
+                                       data-target="#confirm-encargo"><i class="fas fa-motorcycle"></i> Detalles
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'factura_general' operation.id var_operation.id %}" title="Mostrar detalles"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                        Detalles
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -103,6 +129,25 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="confirm-encargo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Descripción del encargo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="content_encargo"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 {% block js %}
@@ -124,6 +169,12 @@
 
         $('#confirm-close').on('show.bs.modal', function (e) {
             $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+    <script>
+        $(document).on('click','.waves-black',function(){
+            const content = $(this).data('content');
+            $("#content_encargo").html(content);
         });
     </script>
 

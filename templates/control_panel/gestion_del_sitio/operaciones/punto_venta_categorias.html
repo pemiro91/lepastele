@@ -28,7 +28,7 @@
                              <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
                                class="btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
                                 Cierre de Caja <i class="fas fa-box"></i>
-                            </a>
+                             </a>
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -61,12 +61,17 @@
                             <td>{{ cp.descripcion_category }}</td>
                             <td>{{ cp.countProduct }}</td>
                             <td>
-                                <a href="{% url 'punto_venta' cp.id %}"
-                                   title="Ver productos de la categoría"
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye"></i> Ver Productos
-                                </a>
-
+                                {% if cp.nombre_categoria == 'Encargo' or cp.nombre_categoria == 'encargo' %}
+                                    <a href="#" data-toggle="modal" class="btn btn-primary btn-sm" title="Realizar encargo"
+                                       data-target="#confirm-encargo"><i class="fas fa-motorcycle"></i> Encargo
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'punto_venta' cp.id %}"
+                                       title="Ver productos de la categoría"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i> Ver Productos
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -135,6 +140,47 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirm-encargo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Encargo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+{#                        <h4 class="font-weight-bold text-primary text-center">CUP</h4>#}
+                        <form id="data_encargo_form" method="post" action="" class="needs-validation" novalidate>{% csrf_token %}
+
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="description_encargo" class="col-form-label">Descripción del encargo:</label>
+                              <textarea name="description_encargo"
+                                   class="form-control required" id="description_encargo"></textarea>
+                            <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                          </div>
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="encargo_amount" class="col-form-label">Monto del encargo:</label>
+                            <input type="number" name="encargo_amount"
+                                   class="form-control required" id="encargo_amount"  >
+                            <div id="shieldRequired2" class="invalid-feedback">El campo no debe estar vacio.</div>
+                            <div id="shieldEncargo" class="invalid-feedback">El monto del gasto no debe ser 0.</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="button"  class="btn btn-primary btn-ok" id="pagar3" name="pagar3"
+                                   value="Guardar" onclick="submitFunctionEncargo(0)"/>
+                          </div>
+                        </form>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
 {% endblock %}
 {% block js %}
     <!-- Page level plugins -->
@@ -176,6 +222,31 @@
                }
             }
             document.forms["data_gastos_form"].submit()
+        }
+    </script>
+
+    <script>
+        function submitFunctionEncargo(i) {
+            const descriptionEncargo = $('#description_encargo');
+            const encargoAmount = $('#encargo_amount');
+            if (!descriptionEncargo.val()){
+               $("#shieldRequired").show();
+               i.preventDefault();
+            }else if (!encargoAmount.val()){
+               $("#shieldRequired2").show();
+               i.preventDefault();
+            }
+            else{
+               $("#shieldRequired").hide();
+               $("#shieldRequired2").hide();
+               if (encargoAmount.val() === 0){
+                   $("#shieldEncargo").show();
+                   i.preventDefault();
+               }else {
+                   $("#data_encargo_form").attr("action", "charge_order");
+               }
+            }
+            document.forms["data_encargo_form"].submit()
         }
     </script>
 

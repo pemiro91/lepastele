@@ -54,6 +54,7 @@ urlpatterns = [
     path('panel/operaciones/gastos_general', views.gastos_general, name="gastos_general"),
     path('panel/operaciones/gastos_general/detalle_gasto/<int:id_gg>', views.gastos_dia_general,
          name="gastos_dia_general"),
+    path('panel/operaciones/charge_order', views.charge_order, name="charge_order"),
     #
     # ----------------------Gestion de Usuarios-------------------------
     # Crud Usuarios

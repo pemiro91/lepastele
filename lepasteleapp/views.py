@@ -67,11 +67,19 @@ class ProductCant:
 def panel_home(request):
     if request.user.is_authenticated:
         operaciones_generales = OperacionGeneral.objects.all()
-        count_operaciones_generales_cash = OperacionDia.objects.filter(tipo_pago='cash').count()
-        count_operaciones_generales_transfermovil = OperacionDia.objects.filter(tipo_pago='transfer').count()
+        operaciones_generales_cash = OperacionDia.objects.filter(tipo_pago='cash') \
+            .aggregate(total_cash=Sum('monto_total_a_pagar'))
+        operaciones_generales_transfermovil = OperacionDia.objects.filter(tipo_pago='transfer') \
+            .aggregate(total_transf=Sum('monto_total_a_pagar'))
+        operaciones_generales_encargo = OperacionDia.objects.filter(tipo_pago='charge') \
+            .aggregate(total_charge=Sum('monto_total_a_pagar'))
+        amount_general = GastosGeneral.objects.all()
+        gastos_total = 0.0
         total_operaciones = 0
         monto_total = 0.0
         propina_total = 0.0
+        for amount in amount_general:
+            gastos_total += amount.monto_gasto_general
         for opg in operaciones_generales:
             total_operaciones += opg.operaciones.count()
             monto_total += opg.monto_total_dia
@@ -93,8 +101,9 @@ def panel_home(request):
 
         context = {'products': products, 'total_operaciones': total_operaciones,
                    'usuarios': users, 'monto_total': monto_total, 'cerrarOperation': isClose,
-                   'countCash': count_operaciones_generales_cash,
-                   'isCloseGeneral': isCloseGeneral, 'countTransfer': count_operaciones_generales_transfermovil,
+                   'countCash': operaciones_generales_cash['total_cash'], 'gastos_total': gastos_total,
+                   'isCloseGeneral': isCloseGeneral, 'total_charge': operaciones_generales_encargo['total_charge'],
+                   'countTransfer': operaciones_generales_transfermovil['total_transf'],
                    'propina_total': propina_total, 'operacionesDia': operacionesDia, 'cantProduct': cantProduct}
         return render(request, "control_panel/index.html", context)
     return redirect('login_user')
@@ -215,6 +224,22 @@ def eliminar_producto(request, id_p):
 def operaciones_dia(request):
     operations = Operacion.objects.all()
     operationsTotal = Operacion.objects.exclude(tipo_pago='home_account')
+
+    totalVentasCash = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
+                                               fecha_operacion__month=datetime.now().month,
+                                               fecha_operacion__day=datetime.now().day).filter(
+        tipo_pago='cash').aggregate(cashTotal=Sum('monto_total_a_pagar'))
+
+    totalVentasTransfer = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
+                                                   fecha_operacion__month=datetime.now().month,
+                                                   fecha_operacion__day=datetime.now().day).filter(
+        tipo_pago='transfer').aggregate(transferTotal=Sum('monto_total_a_pagar'))
+
+    totalVentasEncargo = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
+                                                  fecha_operacion__month=datetime.now().month,
+                                                  fecha_operacion__day=datetime.now().day).filter(
+        tipo_pago='charge').aggregate(encargo=Sum('monto_total_a_pagar'))
+
     total_dia = 0.0
     propina_dia = 0.0
     for ope in operationsTotal:
@@ -227,7 +252,9 @@ def operaciones_dia(request):
     isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja', is_closed=True).last()
     isClose = CerrarOperacion.objects.filter(type_closed='general').last()
     context = {'operaciones': operations, 'total_dia': total_dia, 'propina_dia': propina_dia,
-               'cerrarOperation': isClose, 'isCloseCaja': isCloseCaja}
+               'cerrarOperation': isClose, 'isCloseCaja': isCloseCaja, 'cashTotal': totalVentasCash['cashTotal'],
+               'transferTotal': totalVentasTransfer['transferTotal'],
+               'totalVentasEncargo': totalVentasEncargo['encargo']}
     return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_dia.html", context)
 
 
@@ -269,8 +296,9 @@ def operaciones_general(request):
             propina_general += operat.propina_total_dia
 
     cuentaCasaTotal = 0.0
-    for cuenta in listTemp:
-        cuentaCasaTotal += cuenta.monto_total_a_pagar
+    if listTemp is None:
+        for cuenta in listTemp:
+            cuentaCasaTotal += cuenta.monto_total_a_pagar
 
     totalVentaGeneral = total_venta_general - cuentaCasaTotal
     context = {'operationsGeneral': listCantidadVentas,
@@ -283,44 +311,49 @@ def detalles_de_operation_general(request, id_op):
     total_venta_general = operation.monto_total_dia
     propina_general = operation.propina_total_dia
 
+    totalVentasList = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                                  fecha_operacion__month=operation.fecha_operacion.month,
+                                                  fecha_operacion__day=operation.fecha_operacion.day)
+
     totalVentas = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
                                               fecha_operacion__month=operation.fecha_operacion.month,
-                                              fecha_operacion__day=operation.fecha_operacion.day)
+                                              fecha_operacion__day=operation.fecha_operacion.day). \
+        aggregate(totalDay=Sum('monto_total_a_pagar'))
 
     totalVentasCash = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
                                                   fecha_operacion__month=operation.fecha_operacion.month,
                                                   fecha_operacion__day=operation.fecha_operacion.day).filter(
-        tipo_pago='cash')
+        tipo_pago='cash').aggregate(cashTotal=Sum('monto_total_a_pagar'))
 
     totalVentasTransfer = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
                                                       fecha_operacion__month=operation.fecha_operacion.month,
                                                       fecha_operacion__day=operation.fecha_operacion.day).filter(
-        tipo_pago='transfer')
+        tipo_pago='transfer').aggregate(transferTotal=Sum('monto_total_a_pagar'))
+
+    totalVentasEncargo = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
+                                                     fecha_operacion__month=operation.fecha_operacion.month,
+                                                     fecha_operacion__day=operation.fecha_operacion.day).filter(
+        tipo_pago='charge').aggregate(encargo=Sum('monto_total_a_pagar'))
 
     listTemp = OperacionDia.objects.filter(fecha_operacion__year=operation.fecha_operacion.year,
                                            fecha_operacion__month=operation.fecha_operacion.month,
                                            fecha_operacion__day=operation.fecha_operacion.day).filter(
-        tipo_pago='home_account')
+        tipo_pago='home_account').aggregate(cuentaCasa=Sum('monto_total_a_pagar'))
 
-    cuentaCasaTotal = 0.0
-    cashTotal = 0.0
-    transferTotal = 0.0
-    for cash in totalVentasCash:
-        cashTotal += cash.monto_total_a_pagar
-    for transfer in totalVentasTransfer:
-        transferTotal += transfer.monto_total_a_pagar
-    for cuenta in listTemp:
-        cuentaCasaTotal += cuenta.monto_total_a_pagar
-
-    totalVentaGeneral = total_venta_general - cuentaCasaTotal
+    if listTemp['cuentaCasa'] is None:
+        totalVentaGeneral = total_venta_general
+    else:
+        totalVentaGeneral = total_venta_general - float(listTemp['cuentaCasa'])
 
     context = {
         'operation': operation,
         'total_venta_general': totalVentaGeneral,
         'propina_general': propina_general,
-        'totalVentas': totalVentas,
-        'cashTotal': cashTotal,
-        'transferTotal': transferTotal
+        'totalVentas': totalVentasList,
+        'totalVentasFinal': totalVentas['totalDay'],
+        'totalVentasEncargo': totalVentasEncargo['encargo'],
+        'cashTotal': totalVentasCash['cashTotal'],
+        'transferTotal': totalVentasTransfer['transferTotal']
     }
     return render(request, "control_panel/gestion_del_sitio/operaciones/detalles_operacion_general.html", context)
 
@@ -362,6 +395,7 @@ def cerrar_venta(request):
                 monto_a_devolver=oper.monto_a_devolver,
                 numero_de_transferencia=oper.numero_de_transferencia,
                 propina_del_cliente=oper.propina_del_cliente,
+                descripcion_encargo=oper.descripcion_encargo,
                 fecha_operacion=oper.fecha_operacion
             )
             for itemOpero in oper.pedidos.all():
@@ -550,6 +584,23 @@ def delete_order(request, id_o):
         pe.delete()
         messages.success(request, 'Pedido eliminado satisfactoriamente')
         return redirect('carrito')
+    return redirect('login_user')
+
+
+def charge_order(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            description_encargo = request.POST.get('description_encargo')
+            encargo_amount = request.POST.get('encargo_amount')
+            Operacion.objects.create(
+                usuario=request.user,
+                tipo_pago='charge',
+                monto_total_a_pagar=encargo_amount,
+                descripcion_encargo=description_encargo,
+                fecha_operacion=datetime.now()
+            )
+            messages.success(request, 'Encargo guardado satisfactoriamente')
+            return redirect('punto_venta_categoria')
     return redirect('login_user')
 
 
