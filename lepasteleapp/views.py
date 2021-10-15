@@ -225,7 +225,9 @@ def eliminar_producto(request, id_p):
 
 
 def operaciones_dia(request):
-    operations = Operacion.objects.all()
+    operations = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
+                                          fecha_operacion__month=datetime.now().month,
+                                          fecha_operacion__day=datetime.now().day)
     operationsTotal = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
                                                fecha_operacion__month=datetime.now().month,
                                                fecha_operacion__day=datetime.now().day).exclude(
