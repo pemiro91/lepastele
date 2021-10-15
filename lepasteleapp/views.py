@@ -236,20 +236,17 @@ def operaciones_dia(request):
 
     totalVentasTransfer = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
                                                    fecha_operacion__month=datetime.now().month,
-                                                   fecha_operacion__day=datetime.datetime.now(
-                                                       tz=timezone.utc).day).filter(
+                                                   fecha_operacion__day=datetime.now().day).filter(
         tipo_pago='transfer').aggregate(transferTotal=Sum('monto_total_a_pagar'))
 
     totalVentasEncargo = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
                                                   fecha_operacion__month=datetime.now().month,
-                                                  fecha_operacion__day=datetime.datetime.now(
-                                                      tz=timezone.utc).day).filter(
+                                                  fecha_operacion__day=datetime.now().day).filter(
         tipo_pago='charge').aggregate(encargo=Sum('monto_total_a_pagar'))
 
     totalVentasHome = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
                                                fecha_operacion__month=datetime.now().month,
-                                               fecha_operacion__day=datetime.datetime.now(
-                                                   tz=timezone.utc).day).filter(
+                                               fecha_operacion__day=datetime.now().day).filter(
         tipo_pago='home_account').aggregate(cuenta=Sum('monto_total_a_pagar'))
 
     isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja', is_closed=True).last()
