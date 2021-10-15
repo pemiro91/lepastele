@@ -226,9 +226,12 @@ def eliminar_producto(request, id_p):
 
 def operaciones_dia(request):
     operations = Operacion.objects.all()
-    operationsTotal = Operacion.objects.exclude(tipo_pago='home_account').aggregate(totalDia=Sum('monto_total_a_pagar'),
-                                                                                    propinaDia=Sum(
-                                                                                        'propina_del_cliente'))
+    operationsTotal = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
+                                               fecha_operacion__month=datetime.now().month,
+                                               fecha_operacion__day=datetime.now().day).exclude(
+        tipo_pago='home_account').aggregate(totalDia=Sum('monto_total_a_pagar'),
+                                            propinaDia=Sum(
+                                                'propina_del_cliente'))
     totalVentasCash = Operacion.objects.filter(fecha_operacion__year=datetime.now().year,
                                                fecha_operacion__month=datetime.now().month,
                                                fecha_operacion__day=datetime.now().day).filter(
