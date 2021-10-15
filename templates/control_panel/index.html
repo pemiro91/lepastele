@@ -38,10 +38,10 @@
                                 <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Ventas realizadas
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_operaciones }}</div>
-                                {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                                {#                            <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
-                                {#                            <span>Since last month</span>#}
-                                {#                        </div>#}
+{#                                <div class="mt-2 mb-0 text-muted text-xs">#}
+{#                                    <span class="text-success mr-2"><i class="fa fa-atlas"></i> 3.48%</span>#}
+{#                                    <span>Since last month</span>#}
+{#                                </div>#}
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-atlas fa-2x text-primary"></i>
@@ -63,14 +63,15 @@
                                         {{ total_charge }} CUP
                                     {% else %}
                                         0.0 CUP
-                                    {% endif %} </div>
+                                    {% endif %}
+                                </div>
         {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
         {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
         {#                            <span>Since last month</span>#}
         {#                        </div>#}
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-users fa-2x text-primary"></i>
+                                <i class="fas fa-motorcycle fa-2x text-primary"></i>
                             </div>
                         </div>
                     </div>
@@ -124,13 +125,42 @@
             </a>
         </div>
         <div class="col-xl-4 col-md-6 mb-4">
+            <a href="{% url 'operaciones_general' %}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Monto total por cuenta casa</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {% if totalHome %}
+                                        {{ totalHome }} CUP
+                                    {% else %}
+                                        0.0 CUP
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-home fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
             <a href="{% url 'gastos_general' %}">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-uppercase mb-1">Gastos generales</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ gastos_total }} CUP</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {% if gastos_total %}
+                                        {{ gastos_total }} CUP
+                                    {% else %}
+                                        0.0 CUP
+                                    {% endif %}
+                                </div>
         {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
         {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
         {#                            <span>Since last month</span>#}
@@ -144,79 +174,96 @@
                 </div>
             </a>
         </div>
-{#        <div class="col-xl-4 col-md-6 mb-4">#}
-{#            <div class="card h-100">#}
-{#                <div class="card-body">#}
-{#                    <div class="row align-items-center">#}
-{#                        <div class="col mr-2">#}
-{#                            <div class="text-xs font-weight-bold text-uppercase mb-1">Monto Total</div>#}
-{#                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ monto_total }} CUP</div>#}
-                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                            {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
-                            {#                            <span>Since last month</span>#}
-                            {#                        </div>#}
-{#                        </div>#}
-{#                        <div class="col-auto">#}
-{#                            <i class="fas fa-money-bill-wave-alt fa-2x text-primary"></i>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#        <div class="col-xl-4 col-md-6 mb-4">#}
-{#            <div class="card h-100">#}
-{#                <div class="card-body">#}
-{#                    <div class="row align-items-center">#}
-{#                        <div class="col mr-2">#}
-{#                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total propina</div>#}
-{#                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ propina_total }} CUP</div>#}
-                            {#                        <div class="mt-2 mb-0 text-muted text-xs">#}
-                            {#                            <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
-                            {#                            <span>Since last month</span>#}
-                            {#                        </div>#}
-{#                        </div>#}
-{#                        <div class="col-auto">#}
-{#                            <i class="fas fa-money-bill-wave fa-2x text-primary"></i>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Monto Total</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if monto_total %}
+                                    {{ monto_total }} CUP
+                                {% else %}
+                                    0.0 CUP
+                                {% endif %}
+                            </div>
+{#                            <div class="mt-2 mb-0 text-muted text-xs">#}
+{#                                <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+{#                                <span>Since last month</span>#}
+{#                            </div>#}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-check-alt fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total propina</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if propina_total %}
+                                    {{ propina_total }} CUP
+                                {% else %}
+                                    0.0 CUP
+                                {% endif %}
+                            </div>
+{#                            <div class="mt-2 mb-0 text-muted text-xs">#}
+{#                                <span class="text-success mr-2"><i class="fa fa-users"></i> 3.48%</span>#}
+{#                                <span>Since last month</span>#}
+{#                            </div>#}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
     <!-- Invoice Example -->
     <div class="col-xl-12 col-lg-12 mb-4">
         <div class="card">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Últimas 7 ventas realizadas en el día </h6>
-                {% if cerrarOperation %}
-                    {% if cerrarOperation.is_closed %}
-                        {% if request.user.is_administrador or request.user.is_superuser %}
-                            <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
-                               class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
-                                Abrir venta <i class="fas fa-box-open"></i>
-                            </a>
-                        {% endif %}
+
+                {% if isCloseCaja %}
+                    {% if isCloseCaja.is_closed %}
+                       <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                           <i class="fas fa-box-open"></i> Abrir venta
+                       </a>
                     {% else %}
                         {% if request.user.is_administrador or request.user.is_superuser %}
-                            <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general" data-target="#confirm-close">
-                                Cierre general  <i class="fas fa-archive"></i>
-                            </a>
+                            {% if isCloseCaja.is_closed == False %}
+                                <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                                   class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
+                                    <i class="fas fa-box"></i> Cierre de Caja
+                                </a>
+                            {% else %}
+                                <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                                   class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general"
+                                   data-target="#confirm-close-venta">
+                                    <i class="fas fa-archive"></i> Cierre general
+                                </a>
+                            {% endif %}
                         {% else %}
                             <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
-                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
-                                Cierre de Caja  <i class="fas fa-box"></i>
+                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja"
+                               data-target="#confirm-close">
+                                <i class="fas fa-box"></i> Cierre de Caja
                             </a>
                         {% endif %}
-
                     {% endif %}
                 {% else %}
-                    {% if request.user.is_administrador or request.user.is_superuser %}
-                        <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
-                           class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
-                            Abrir venta <i class="fas fa-box-open"></i>
-                        </a>
-                    {% endif %}
+                    <a href="#" data-href="{% url 'abrir_venta' %}" data-toggle="modal"
+                       class="btn btn-primary btn-sm" title="Abrir venta" data-target="#confirm-open">
+                        Abrir venta <i class="fas fa-box-open"></i>
+                    </a>
                 {% endif %}
 
             </div>
@@ -361,6 +408,20 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="confirm-close-venta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Desea cerrar la venta?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="btn btn-primary btn-ok">Si</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 {% endblock %}
@@ -383,6 +444,10 @@
         });
 
         $('#confirm-close').on('show.bs.modal', function (e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+
+        $('#confirm-close-venta').on('show.bs.modal', function (e) {
             $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
         });
     </script>

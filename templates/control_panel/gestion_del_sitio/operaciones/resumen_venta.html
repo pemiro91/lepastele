@@ -1,7 +1,7 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Factura</h1>
+    <h1 class="h3 mb-0 text-gray-800"><a href="{% url 'panel' %}"><i class="fas fa-arrow-alt-circle-left"></i> Factura</a></h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         <li class="breadcrumb-item active" aria-current="page">Detalles de venta</li>
@@ -21,23 +21,31 @@
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h5><strong>Detalles de venta</strong></h5>
-                                        <span class="font-weight-bold d-block mt-4">Realizada por: {{ user.first_name }}</span><br>
-                                        <span class="font-weight-bold d-block text-muted">Tipo de pago:
+                                        <span class="font-weight-bold d-block mt-4"><strong>Realizada por: </strong>{{ user.first_name }}</span>
+                                        <span class="font-weight-bold d-block text-muted"><strong>Tipo de pago: </strong>
                                             {% if  operation.tipo_pago == 'cash' %}
-                                                <span>Efectivo</span>
+                                                Efectivo
                                             {% elif operation.tipo_pago == 'transfer' %}
-                                                <span>Transferencia</span>
+                                                Transferencia
                                             {% elif operation.tipo_pago == 'charge' %}
-                                                <span>Encargo</span>
+                                                Encargo
                                             {% elif operation.tipo_pago == 'home_account' %}
-                                                <span>Cuenta casa</span>
+                                                Cuenta casa
                                             {% endif %}
                                         </span>
                                         {% if operation.numero_de_transferencia != None %}
                                             <td>
                                                 <div class="py-2">
-                                                    <span class="font-weight-bold d-block text-muted">No. de transacción:
-                                                    <span>{{ operation.numero_de_transferencia }}</span></span>
+                                                    <span class="font-weight d-block text-muted"><strong>No. de transacción: </strong>
+                                                    {{ operation.numero_de_transferencia }}</span>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                        {% if operation.responsable_cuenta != None %}
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight d-block text-muted"><strong>A nombre de: </strong>
+                                                    {{ operation.responsable_cuenta }}</span>
                                                 </div>
                                             </td>
                                         {% endif %}

@@ -6,7 +6,7 @@
         {% if request.user.is_administrador or request.user.is_superuser %}
             <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         {% endif %}
-        <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'punto_venta' %}">Punto de Venta</a></li>
         <li class="breadcrumb-item active" aria-current="page">Carrito</li>
     </ol>
 {% endblock %}
@@ -137,14 +137,14 @@
                           <div class="form-group">
                             <label for="super_count" class="col-form-label">Tipo de pago:</label>
                             <select class="form-control" id="typePaysSelector" name="payment_type" aria-label="Default select example" required>
-                              <option selected disabled="disabled">Seleccione un tipo de pago</option>
-                              <option value="cash">Efectivo</option>
+{#                              <option selected disabled="disabled">Seleccione un tipo de pago</option>#}
+                              <option selected value="cash">Efectivo</option>
                               <option value="transfer">Transferencia</option>
                               <option value="home_account">Cuenta casa</option>
                             </select>
                           </div>
 
-                          <div id="monto_client" style="display:none" class="form-group has-error">
+                          <div id="monto_client" class="form-group has-error">
                             <label for="amount_client" class="col-form-label">Monto pagado por el cliente:</label>
                             <input type="number" name="amount_client"
                                    class="form-control required" id="amount_client"  >
@@ -156,10 +156,15 @@
                               <input type="text" name="transaction_code" class="form-control" id="transaction_code" >
                               <div id="shieldTransRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
                           </div>
+                          <div id="home" style="display:none" class="form-group has-error">
+                              <label for="home_account" class="col-form-label">A nombre de:</label>
+                              <input type="text" name="home_account" class="form-control" id="home_account" >
+                              <div id="shieldHomeRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                          </div>
 
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <input type="button" style="display:none" class="btn btn-primary btn-ok" id="pagar1" name="pagar1"
+                            <input type="button" class="btn btn-primary btn-ok" id="pagar1" name="pagar1"
                                    value="Pagar" onclick="submitFunction(1)"/>
                             <input type="button" style="display:none" class="btn btn-primary btn-ok" id="pagar2" name="pagar2"
                                    value="Pagar" onclick="submitFunction(2)"/>
@@ -213,6 +218,7 @@
               if ( this.value === 'cash'){
                 $("#monto_client").show();
                 $("#transaction").hide();
+                $("#home").hide();
                 $("#pagar1").show();
                 $("#pagar2").hide();
                 $("#pagar3").hide();
@@ -220,6 +226,7 @@
               else if ( this.value === 'transfer'){
                 $("#monto_client").show();
                 $("#transaction").show();
+                $("#home").hide();
                 $("#pagar1").hide();
                 $("#pagar2").show();
                 $("#pagar3").hide();
@@ -227,6 +234,7 @@
               else {
                 $("#monto_client").hide();
                 $("#transaction").hide();
+                $("#home").show();
                 $("#pagar1").hide();
                 $("#pagar2").hide();
                 $("#pagar3").show();
@@ -277,7 +285,14 @@
                }
            }
            if (i===3){
-               $("#data_pay_form").attr("action", "pagar");
+               const homeAccount = $('#home_account');
+               if (!homeAccount.val()){
+                   $("#shieldHomeRequired").show();
+                   i.preventDefault();
+               }else {
+                   $("#shieldHomeRequired").hide();
+                   $("#data_pay_form").attr("action", "pagar");
+               }
            }
            document.forms["data_pay_form"].submit()
        }

@@ -96,6 +96,7 @@ class Operacion(models.Model):
     # Solo para transferencia
     numero_de_transferencia = models.CharField(max_length=100, null=True, blank=True, name='numero_de_transferencia')
     descripcion_encargo = models.CharField(max_length=400, null=True, blank=True, name='descripcion_encargo')
+    responsable_cuenta = models.CharField(max_length=400, null=True, blank=True, name='responsable_cuenta')
     # Solo para efectivo, transferencia, encargo
     propina_del_cliente = models.FloatField(max_length=100, null=True, blank=True)
     fecha_operacion = models.DateTimeField(datetime.datetime.now())
@@ -116,6 +117,7 @@ class OperacionDia(models.Model):
     # Solo para transferencia
     numero_de_transferencia = models.CharField(max_length=100, null=True, blank=True, name='numero_de_transferencia')
     descripcion_encargo = models.CharField(max_length=400, null=True, blank=True, name='descripcion_encargo')
+    responsable_cuenta = models.CharField(max_length=400, null=True, blank=True, name='responsable_cuenta')
     # Solo para efectivo, transferencia, encargo
     propina_del_cliente = models.FloatField(max_length=100, null=True, blank=True)
     fecha_operacion = models.DateTimeField(datetime.datetime.now())

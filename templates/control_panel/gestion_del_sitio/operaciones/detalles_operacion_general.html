@@ -14,24 +14,43 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Total en el día: {{ totalVentasFinal }} CUP</h6>
-                <h6 class="m-0 font-weight text-primary"><strong>Total por transferencia:</strong>
-                    {% if transferTotal %}
-                        {{ transferTotal }} CUP
-                    {% else %}
-                        0.0 CUP
-                    {% endif %}
-                </h6>
-                <h6 class="m-0 font-weight text-primary"><strong>Total en efectivo:</strong>
-                    {% if cashTotal %}
-                        {{ cashTotal }} CUP
-                    {% else %}
-                        0.0 CUP
-                    {% endif %}
-                </h6>
-                <h6 class="m-0 font-weight text-primary"><strong>Total por encargo:</strong>
-                    {% if totalVentasEncargo %}
-                        {{ totalVentasEncargo }} CUP
+                <div>
+                    <h6 class="m-0 font-weight text-primary"><strong>Total por cuenta casa:</strong>
+                        {% if totalVentasHome %}
+                            {{ totalVentasHome }} CUP
+                        {% else %}
+                            0.0 CUP
+                        {% endif %}
+                    </h6>
+                    <br>
+                    <h6 class="m-0 font-weight text-primary"><strong>Total por transferencia:</strong>
+                        {% if transferTotal %}
+                            {{ transferTotal }} CUP
+                        {% else %}
+                            0.0 CUP
+                        {% endif %}
+                    </h6>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight text-primary"><strong>Total en efectivo:</strong>
+                        {% if cashTotal %}
+                            {{ cashTotal }} CUP
+                        {% else %}
+                            0.0 CUP
+                        {% endif %}
+                    </h6>
+                    <br>
+                    <h6 class="m-0 font-weight text-primary"><strong>Total por encargo:</strong>
+                        {% if totalVentasEncargo %}
+                            {{ totalVentasEncargo }} CUP
+                        {% else %}
+                            0.0 CUP
+                        {% endif %}
+                    </h6>
+                </div>
+                <h6 class="m-0 font-weight text-primary"><strong>Total en el día:</strong>
+                    {% if totalVentasFinal %}
+                        {{ totalVentasFinal }} CUP
                     {% else %}
                         0.0 CUP
                     {% endif %}
@@ -52,7 +71,7 @@
                     <tfoot>
                     <tr>
                         <th></th>
-                        <th>Total: {{ total_venta_general }} CUP</th>
+                        <th>Total: {{ totalVentasFinal }} CUP</th>
                         <th>Total: {{ propina_general }} CUP</th>
                         <th></th>
                         <th></th>

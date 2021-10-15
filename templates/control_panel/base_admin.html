@@ -76,7 +76,7 @@
                 <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Operaciones</h6>
-                        <a class="collapse-item" href="{% url 'punto_venta_categoria' %}">Punto de ventas</a>
+                        <a class="collapse-item" href="{% url 'punto_venta' %}">Punto de ventas</a>
                         {% if operaciones_del_dia.count != 0 %}
                             <a class="collapse-item" href="{% url 'operaciones' %}">Ventas del día</a>
                         {% endif %}
@@ -86,7 +86,9 @@
                             {% endif %}
                         {% endif %}
                         <a class="collapse-item" href="{% url 'gastos_dia' %}">Gastos del día</a>
-                        <a class="collapse-item" href="{% url 'gastos_general' %}">Gastos generales</a>
+                        {% if user.is_administrador or user.is_superuser %}
+                            <a class="collapse-item" href="{% url 'gastos_general' %}">Gastos generales</a>
+                        {% endif %}
                     </div>
                 </div>
             </li>
@@ -227,7 +229,7 @@
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
             <span>copyright &copy; <script> document.write(new Date().getFullYear()); </script> - Desarrollado por
-              <b><a href="https://habanatrans.com/" target="_blank">Equipo PachoHabanaTrans</a></b>
+              <b><a href="https://www.facebook.com/Habanatrans" target="_blank">Equipo PachoHabanaTrans</a></b>
             </span>
                 </div>
             </div>

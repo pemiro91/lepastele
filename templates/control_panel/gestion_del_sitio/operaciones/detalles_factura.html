@@ -1,7 +1,7 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Factura</h1>
+    <h1 class="h3 mb-0 text-gray-800"><a href="{% url 'detalles_de_operation_general' operationGeneral.id %}"><i class="fas fa-arrow-alt-circle-left"></i> Factura</a></h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
         <li class="breadcrumb-item"><a href="{% url 'operaciones_general' %}">Ventas generales</a></li>
@@ -40,6 +40,14 @@
                                                 <div class="py-2">
                                                     <span class="font-weight d-block text-muted"><strong>No. de transacción: </strong>
                                                     {{ operation.numero_de_transferencia }}</span>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                        {% if operation.responsable_cuenta != None %}
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight d-block text-muted"><strong>A nombre de: </strong>
+                                                    {{ operation.responsable_cuenta }}</span>
                                                 </div>
                                             </td>
                                         {% endif %}

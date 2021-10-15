@@ -1,12 +1,10 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Productos</h1>
+    <h1 class="h3 mb-0 text-gray-800">Punto de Venta</h1>
     <ol class="breadcrumb">
-        {% if request.user.is_administrador or request.user.is_superuser %}
-            <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
-        {% endif %}
-        <li class="breadcrumb-item active" aria-current="page">Productos</li>
+        <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -15,20 +13,29 @@
     <div class="col-lg-12">
         <div class="card mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <div>
+                    <a href="#" data-toggle="modal" class="btn btn-primary btn-sm" title="Realizar cierre de caja"
+                       data-target="#confirm-gasto"> <i class="fas fa-sort-amount-down"></i> Gasto
+                    </a>
+                    <a href="#" data-toggle="modal" class="btn btn-primary btn-sm" title="Realizar encargo"
+                       data-target="#confirm-encargo"><i class="fas fa-motorcycle"></i> Encargo
+                    </a>
+                </div>
+
                 <h6 class="m-0 font-weight-bold text-primary"></h6>
-                {% if pedidos.count != 0 %}
+                {% ifnotequal pedidos.count 0 %}
                     <a href="{% url 'carrito' %}" type="button" class="btn btn-primary mb-1">
                     <i class="fas fa-shopping-cart"></i> Ver carrito - {{ pedidos.count }}</a>
                 {% else %}
-                    {% if cerrarOperation %}
-                        {% if not cerrarOperation.is_closed %}
-                             <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                    {% if cerrarOperation.is_closed == False %}
+                        {% if history.count != 0%}
+                            <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
                                class="btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
-                                Cierre de Caja <i class="fas fa-box"></i>
+                                <i class="fas fa-box"></i> Cierre de Caja
                             </a>
                         {% endif %}
                     {% endif %}
-                {% endif %}
+                {% endifnotequal %}
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
@@ -40,10 +47,11 @@
                         <th>Categoría</th>
                         <th>Precio</th>
                         {% if cerrarOperation %}
-                            {% if not cerrarOperation.is_closed %}
+                            {% if cerrarOperation.is_closed == False %}
                                 <th>Acciones</th>
                             {% endif %}
                         {% endif %}
+
                     </tr>
                     </thead>
                     <tbody>
@@ -55,10 +63,10 @@
                             <td>{{ producto.categoria_producto }}</td>
                             <td>{{ producto.precio }} CUP</td>
                             {% if cerrarOperation %}
-                                {% if not cerrarOperation.is_closed %}
+                                {% if cerrarOperation.is_closed == False %}
                                     <td>
                                         <a href="#" type="button" data-toggle="modal" class="btn btn-primary btn-sm waves-black"
-                                           data-id="{{ producto.id }}" data-url="{% url 'add_order' category.id producto.id %}"
+                                           data-id="{{ producto.id }}" data-url="{% url 'add_order' producto.id %}"
                                            title="Agregar producto" data-target="#confirm-count">
                                             <i class="fas fa-plus"></i>
                                             Agregar
@@ -87,21 +95,19 @@
                 </div>
                 <div class="modal-body">
                     <form id="add_order_form" action="" method="post">{% csrf_token %}
-                      <div class="form-group has-error">
+                      <div class="form-group">
                         <label for="recipient-name" class="col-form-label">Cantidad:</label>
                         <input type="number" name="count_product" class="form-control" id="recipient-name">
-                        <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-secondary btn-ok" onclick="submitFunction(1)" >Agregar al carrito</button>
+                        <button type="submit" class="btn btn-secondary btn-ok" >Agregar al carrito</button>
                       </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Modal -->
     <div class="modal fade" id="confirm-close" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
@@ -115,6 +121,88 @@
                     <a class="btn btn-primary btn-ok">Si</a>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-gasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Gasto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+{#                        <h4 class="font-weight-bold text-primary text-center">CUP</h4>#}
+                        <form id="data_gastos_form" method="post" action="" class="needs-validation" novalidate>{% csrf_token %}
+
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="description_amount" class="col-form-label">Descripción del gasto:</label>
+                            <input type="text" name="description_amount"
+                                   class="form-control required" id="description_amount"  >
+                            <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                          </div>
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="gasto_amount" class="col-form-label">Monto del gasto:</label>
+                            <input type="number" name="gasto_amount"
+                                   class="form-control required" id="gasto_amount"  >
+                            <div id="shieldRequired2" class="invalid-feedback">El campo no debe estar vacio.</div>
+                            <div id="shieldAmount" class="invalid-feedback">El monto del gasto no debe ser 0.</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="button"  class="btn btn-primary btn-ok" id="pagar3" name="pagar3"
+                                   value="Guardar" onclick="submitFunction(0)"/>
+                          </div>
+                        </form>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-encargo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Encargo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+{#                        <h4 class="font-weight-bold text-primary text-center">CUP</h4>#}
+                        <form id="data_encargo_form" method="post" action="" class="needs-validation" novalidate>{% csrf_token %}
+
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="description_encargo" class="col-form-label">Descripción del encargo:</label>
+                              <textarea name="description_encargo"
+                                   class="form-control required" id="description_encargo"></textarea>
+                            <div id="shieldRequired" class="invalid-feedback">El campo no debe estar vacio.</div>
+                          </div>
+                          <div id="monto_client" class="form-group has-error">
+                            <label for="encargo_amount" class="col-form-label">Monto del encargo:</label>
+                            <input type="number" name="encargo_amount"
+                                   class="form-control required" id="encargo_amount"  >
+                            <div id="shieldRequired2" class="invalid-feedback">El campo no debe estar vacio.</div>
+                            <div id="shieldEncargo" class="invalid-feedback">El monto del gasto no debe ser 0.</div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="button"  class="btn btn-primary btn-ok" id="pagar3" name="pagar3"
+                                   value="Guardar" onclick="submitFunctionEncargo(0)"/>
+                          </div>
+                        </form>
+                    </div>
+                </div>
+
         </div>
     </div>
 
@@ -132,31 +220,67 @@
         });
     </script>
 
-
-
     <script>
-        var id
         $(document).on('click','.waves-black',function(){
-            id = $(this).data('id');
+            var id = $(this).data('id');
             console.log(id)
+            $("#add_order_form").attr("action", "add_order/" + id);
         });
-        function submitFunction(i) {
-            const amountClient = $('#recipient-name');
-            if (!amountClient.val()){
-               $("#shieldRequired").show();
-               i.preventDefault();
-            }else{
-               $("#shieldRequired").hide();
-               $("#add_order_form").attr("action", "add_order/" + {{ category.id }} + "/" + id);
-            }
-            document.forms["add_order_form"].submit()
-        }
     </script>
 
     <script>
         $('#confirm-close').on('show.bs.modal', function (e) {
             $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
         });
+    </script>
+    <script>
+        function submitFunction(i) {
+            const descriptionAmount = $('#description_amount');
+            const gastoAmount = $('#gasto_amount');
+            if (!descriptionAmount.val()){
+               $("#shieldRequired").show();
+               i.preventDefault();
+            }else if (!gastoAmount.val()){
+               $("#shieldRequired2").show();
+               i.preventDefault();
+            }
+            else{
+               $("#shieldRequired").hide();
+               $("#shieldRequired2").hide();
+               if (gastoAmount.val() === 0){
+                   $("#shieldAmount").show();
+                   i.preventDefault();
+               }else {
+                   $("#data_gastos_form").attr("action", "add_spending");
+               }
+            }
+            document.forms["data_gastos_form"].submit()
+        }
+    </script>
+
+    <script>
+        function submitFunctionEncargo(i) {
+            const descriptionEncargo = $('#description_encargo');
+            const encargoAmount = $('#encargo_amount');
+            if (!descriptionEncargo.val()){
+               $("#shieldRequired").show();
+               i.preventDefault();
+            }else if (!encargoAmount.val()){
+               $("#shieldRequired2").show();
+               i.preventDefault();
+            }
+            else{
+               $("#shieldRequired").hide();
+               $("#shieldRequired2").hide();
+               if (encargoAmount.val() === 0){
+                   $("#shieldEncargo").show();
+                   i.preventDefault();
+               }else {
+                   $("#data_encargo_form").attr("action", "charge_order");
+               }
+            }
+            document.forms["data_encargo_form"].submit()
+        }
     </script>
 
 {% endblock %}

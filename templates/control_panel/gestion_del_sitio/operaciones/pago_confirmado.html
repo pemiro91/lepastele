@@ -1,9 +1,9 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Factura de Pago</h1>
+    <h1 class="h3 mb-0 text-gray-800"><a href="{% url 'punto_venta' %}"><i class="fas fa-arrow-alt-circle-left"></i> Factura de Pago</a></h1>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'punto_venta_categoria' %}">Punto de Venta</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'punto_venta' %}">Punto de Venta</a></li>
         <li class="breadcrumb-item active" aria-current="page">Factura de Pago</li>
     </ol>
 {% endblock %}
@@ -22,8 +22,8 @@
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h5><strong>Factura de Pago No. {{ operation.id }}</strong></h5>
-                                        <span class="font-weight d-block mt-4"><strong>Realizada por: </strong>{{ user.first_name }}</span>
-                                        <span class="font-weight d-block text-muted"><strong>Tipo de pago: </strong>
+                                        <span class="font-weight-bold d-block mt-4"><strong>Realizada por: </strong>{{ user.first_name }}</span>
+                                        <span class="font-weight-bold d-block text-muted"><strong>Tipo de pago: </strong>
                                             {% if  operation.tipo_pago == 'cash' %}
                                                 Efectivo
                                             {% elif operation.tipo_pago == 'transfer' %}
@@ -39,6 +39,14 @@
                                                 <div class="py-2">
                                                     <span class="font-weight d-block text-muted"><strong>No. de transacción: </strong>
                                                     {{ operation.numero_de_transferencia }}</span>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                        {% if operation.responsable_cuenta != None %}
+                                            <td>
+                                                <div class="py-2">
+                                                    <span class="font-weight d-block text-muted"><strong>A nombre de: </strong>
+                                                    {{ operation.responsable_cuenta }}</span>
                                                 </div>
                                             </td>
                                         {% endif %}
@@ -215,4 +223,7 @@
             $("#tip_form").attr("action", id);
         });
     </script>
+{#    <script>#}
+{#        window.onbeforeunload = function() { return "Your work will be lost."; };#}
+{#    </script>#}
 {% endblock %}

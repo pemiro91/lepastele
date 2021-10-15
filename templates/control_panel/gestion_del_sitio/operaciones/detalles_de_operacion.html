@@ -1,7 +1,7 @@
 {% extends  'control_panel/base_admin.html' %}
 {% load static %}
 {% block submenu-superior %}
-    <h1 class="h3 mb-0 text-gray-800">Detalles de venta</h1>
+    <h1 class="h3 mb-0 text-gray-800"><a href="{% url 'operaciones' %}"><i class="fas fa-arrow-alt-circle-left"></i> Detalles de venta</a></h1>
     <ol class="breadcrumb">
         {% if request.user.is_administrador or request.user.is_superuser %}
             <li class="breadcrumb-item"><a href="{% url 'panel' %}">Resumen</a></li>
