@@ -47,7 +47,11 @@
                         <tr>
                             <td>{{ operation.id }}</td>
                             <td>{{ operation.monto_total_dia }} CUP</td>
-                            <td>{{ operation.propina_total_dia }} CUP</td>
+                            {% if operation.propina_total_dia is None %}
+                                <td >0.0 CUP</td>
+                            {% else %}
+                                <td>{{ operation.propina_total_dia }} CUP</td>
+                            {% endif %}
                             <td>{{ operation.cantidadVentas }}</td>
                             <td>{{ operation.fecha_operacion|date }}</td>
                             <td>

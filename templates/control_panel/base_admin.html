@@ -80,10 +80,8 @@
                         {% if operaciones_del_dia.count != 0 %}
                             <a class="collapse-item" href="{% url 'operaciones' %}">Ventas del día</a>
                         {% endif %}
-                        {% if user.is_administrador or user.is_superuser %}
-                            {% if operaciones_general.count != 0 %}
-                                <a class="collapse-item" href="{% url 'operaciones_general' %}">Ventas generales</a>
-                            {% endif %}
+                        {% if operaciones_general.count != 0 %}
+                            <a class="collapse-item" href="{% url 'operaciones_general' %}">Ventas generales</a>
                         {% endif %}
                         <a class="collapse-item" href="{% url 'gastos_dia' %}">Gastos del día</a>
                         {% if user.is_administrador or user.is_superuser %}

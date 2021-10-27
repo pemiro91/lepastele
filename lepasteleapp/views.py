@@ -50,7 +50,11 @@ def base_admin(request):
     if request.user.is_authenticated:
         user = request.user
         operaciones_del_dia = Operacion.objects.all()
-        operacionesGeneral = OperacionGeneral.objects.all()
+        if request.user.is_administrador or request.user.is_superuser:
+            operacionesGeneral = OperacionGeneral.objects.all()
+        else:
+            operacionesGeneral = OperacionGeneral.objects.filter(usuario=request.user)
+
         context = {'operaciones_del_dia': operaciones_del_dia, 'operaciones_general': operacionesGeneral, 'user': user}
         return render(request, "control_panel/base_admin.html", context)
     return redirect('login_user')
@@ -254,13 +258,16 @@ def operaciones_dia(request):
                                                fecha_operacion__day=datetime.now().day).filter(
         tipo_pago='home_account').aggregate(cuenta=Sum('monto_total_a_pagar'))
 
-    isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja', is_closed=True).last()
+    isCloseCaja = CerrarOperacion.objects.filter(type_closed='caja').last()
     isClose = CerrarOperacion.objects.filter(type_closed='general').last()
+    print(isCloseCaja.fecha_cierre.day)
+    print(isClose.fecha_cierre.day)
     context = {'operaciones': operations, 'total_dia': operationsTotal['totalDia'],
                'propina_dia': operationsTotal['propinaDia'],
                'cerrarOperation': isClose, 'isCloseCaja': isCloseCaja, 'cashTotal': totalVentasCash['cashTotal'],
                'transferTotal': totalVentasTransfer['transferTotal'],
-               'totalVentasEncargo': totalVentasEncargo['encargo'], 'totalVentasHome': totalVentasHome['cuenta']}
+               'totalVentasEncargo': totalVentasEncargo['encargo'], 'totalVentasHome': totalVentasHome['cuenta'],
+               'dayCaja': isCloseCaja.fecha_cierre.day, 'dayGeneral': isClose.fecha_cierre.day}
     return render(request, "control_panel/gestion_del_sitio/operaciones/ventas_dia.html", context)
 
 
@@ -274,8 +281,13 @@ class Ventas:
 
 
 def operaciones_general(request):
-    operationsGeneral = OperacionGeneral.objects.all()
+    # operationsGeneral = OperacionGeneral.objects.all()
     # operationsGeneral = OperacionDia.objects.all()
+    if request.user.is_administrador or request.user.is_superuser:
+        operationsGeneral = OperacionGeneral.objects.all()
+    else:
+        operationsGeneral = OperacionGeneral.objects.filter(usuario=request.user)
+
     total_venta_general = 0.0
     propina_general = 0.0
     listCantidadVentas = []
@@ -424,8 +436,10 @@ def cerrar_venta(request):
                                        fecha_gasto__day=datetime.now().day) \
             .aggregate(totalGasto=Sum('monto_gasto'))
 
-        GastosGeneral.objects.create(monto_gasto_general=gastos['totalGasto'],
-                                     fecha_gasto_general=datetime.now())
+        if gastos:
+            GastosGeneral.objects.create(monto_gasto_general=gastos['totalGasto'], fecha_gasto_general=datetime.now())
+        else:
+            GastosGeneral.objects.create(monto_gasto_general=0.0, fecha_gasto_general=datetime.now())
 
         for operationDay in listOperationsDia:
             operation_general.operaciones.add(operationDay)
@@ -487,7 +501,10 @@ def gastos_dia(request):
                                        fecha_gasto__day=datetime.now().day)
         totalGastosDia = 0.0
         for gasto in gastos:
-            totalGastosDia += gasto.monto_gasto
+            if gasto.monto_gasto:
+                totalGastosDia += gasto.monto_gasto
+            else:
+                totalGastosDia += 0.0
         context = {'gastos': gastos, 'totalGastosDia': totalGastosDia}
         return render(request, "control_panel/gestion_del_sitio/operaciones/gastos/gastos_dia.html", context)
     return redirect('login_user')
@@ -498,7 +515,10 @@ def gastos_general(request):
         gastos = GastosGeneral.objects.all()
         totalGastosGeneral = 0.0
         for gasto in gastos:
-            totalGastosGeneral += gasto.monto_gasto_general
+            if gasto.monto_gasto_general:
+                totalGastosGeneral += gasto.monto_gasto_general
+            else:
+                totalGastosGeneral += 0.0
         context = {'gastos': gastos, 'totalGastosGeneral': totalGastosGeneral}
         return render(request, "control_panel/gestion_del_sitio/operaciones/gastos/gastos_general.html", context)
     return redirect('login_user')

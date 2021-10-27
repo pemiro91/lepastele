@@ -238,24 +238,16 @@
                            <i class="fas fa-box-open"></i> Abrir venta
                        </a>
                     {% else %}
-                        {% if request.user.is_administrador or request.user.is_superuser %}
-                            {% if isCloseCaja.is_closed == False %}
-                                <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
-                                   class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
-                                    <i class="fas fa-box"></i> Cierre de Caja
-                                </a>
-                            {% else %}
-                                <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
-                                   class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general"
-                                   data-target="#confirm-close-venta">
-                                    <i class="fas fa-archive"></i> Cierre general
-                                </a>
-                            {% endif %}
-                        {% else %}
+                        {% if isCloseCaja.is_closed == False %}
                             <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
-                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja"
-                               data-target="#confirm-close">
+                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
                                 <i class="fas fa-box"></i> Cierre de Caja
+                            </a>
+                        {% else %}
+                            <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
+                               class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre general"
+                               data-target="#confirm-close-venta">
+                                <i class="fas fa-archive"></i> Cierre general
                             </a>
                         {% endif %}
                     {% endif %}

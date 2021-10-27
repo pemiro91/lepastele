@@ -39,7 +39,11 @@
                     {% for gasto in gastos %}
                         <tr>
                             <td>{{ gasto.id }}</td>
-                            <td>{{ gasto.monto_gasto_general }} CUP</td>
+                            {% if gasto.monto_gasto_general is None %}
+                                <td >0.0 CUP</td>
+                            {% else %}
+                                <td>{{ gasto.monto_gasto_general }} CUP</td>
+                            {% endif %}
                             <td>{{ gasto.fecha_gasto_general|date }}</td>
                             <td>
                                 <a href="{% url 'gastos_dia_general' gasto.id %}" title="Mostrar detalles"

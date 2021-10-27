@@ -56,14 +56,20 @@
                         0.0 CUP
                     {% endif %}
                 </h6>
-                {% if isCloseCaja %}
-                    {% if request.user.is_administrador or request.user.is_superuser %}
+                {% if dayCaja != dayGeneral %}
+                    {% if isCloseCaja.is_closed == False %}
+                        <a href="#" data-href="{% url 'cerrar_caja' %}" data-toggle="modal"
+                           class="m-0 float-right btn btn-primary btn-sm" title="Realizar cierre de caja" data-target="#confirm-close">
+                            <i class="fas fa-box"></i> Cierre de Caja
+                        </a>
+                    {% else %}
                         <a href="#" data-href="{% url 'cerrar_venta' %}" data-toggle="modal"
                            class="m-0 float-right btn btn-primary btn-sm" title="Cierre general" data-target="#confirm-close">
-                            Cierre general  <i class="fas fa-archive"></i>
+                            <i class="fas fa-archive"></i> Cierre general
                         </a>
                     {% endif %}
                 {% endif %}
+
             </div>
             <div class="table-responsive p-3">
                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
